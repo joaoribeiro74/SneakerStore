@@ -75,28 +75,15 @@ export default class Client{
     }
 
     setClientName(clientName: string): void {
-        if (clientName.length > 0) {
-            this.clientName = clientName;
-        } else {
-            throw new Error("Nome do Cliente não pode ser vazio");
-        }
+        this.clientName = clientName;
     }
 
     setClientEmail(clientEmail: string): void {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailRegex.test(clientEmail)) {
-            this.clientEmail = clientEmail;
-        } else {
-            throw new Error("Email inválido");
-        }
+        this.clientEmail = clientEmail;
     }
 
     setCep(cep: string): void {
-        if (cep.length === 8 && !isNaN(Number(cep))) {
-            this.cep = cep;
-        } else {
-            throw new Error("CEP Inválido");
-        }
+        this.cep = cep;
     }
 
     setCity(city: string): void {

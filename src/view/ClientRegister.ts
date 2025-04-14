@@ -1,35 +1,31 @@
 import promptSync from "prompt-sync";
-import ClientController from "../control/ClientController";
 import Client from "../model/Client";
+import MainController from "../control/MainController";
 
-export default class Register {
-    private clientController: ClientController;
+export default class ClientRegister {
     private prompt = promptSync();
+    private control: MainController;
 
-    constructor(clientController: ClientController) {
-        this.clientController = clientController;
+    constructor(control: MainController) {
+        this.control = control;
     }
 
-    public registerClient(): void {
+    public addClient(): void {
         console.log("\n--- Cadastro de Cliente ---");
 
-        const clientName = this.getInput("Nome: ");
-        const clientEmail = this.getValidEmailInput("E-mail: ");
-        const country = this.getInput("País: ");
-        const cep = this.getValidCepInput("CEP: ");
-        const state = this.getValidStateInput("Estado (Sigla): ");
-        const city = this.getInput("Cidade: ");
-        const district = this.getInput("Bairro: ");
-        const address = this.getInput("Endereço: ");
-        const reference = this.getOptionalInput("Referência (Opcional): ");
+        let clientName = this.getInput("Nome: ");
+        let clientEmail = this.getValidEmailInput("E-mail: ");
+        let country = this.getInput("País: ");
+        let cep = this.getValidCepInput("CEP: ");
+        let state = this.getValidStateInput("Estado (Sigla): ");
+        let city = this.getInput("Cidade: ");
+        let district = this.getInput("Bairro: ");
+        let address = this.getInput("Endereço: ");
+        let reference = this.getOptionalInput("Referência (Opcional): ");
 
-        try {
-            const newClient = new Client(clientName, clientEmail, cep, city, state, country, district, address, reference!);
-            this.clientController.addClient(newClient);
-            console.log(`Cliente ${newClient.getClientName()} cadastrado com sucesso!`);
-        } catch (error) {
-            console.log("Erro ao cadastrar cliente");
-        }
+        let client = new Client(clientName, clientEmail, cep, city, state, country, district, address, reference!);
+        this.control.db.addNewClient(client);
+        console.log(`\nCliente ${client.getClientName()} cadastrado com sucesso!`);
     }
 
     private getInput(promptText: string): string {

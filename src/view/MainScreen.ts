@@ -1,13 +1,15 @@
 import promptSync from 'prompt-sync';
-import Register from './Register';
-import ClientController from '../control/ClientController';
+import MainController from '../control/MainController';
+import ClientRegister from './ClientRegister';
 
 export default class MainScreen {
     private prompt = promptSync();
-    private clientController = new ClientController();
-    private register = new Register(this.clientController);
+    private control: MainController;
+    private clientRegister: ClientRegister;
 
-    constructor() {
+    constructor(control: MainController) {
+        this.control = control;
+        this.clientRegister = new ClientRegister(control);
         this.mainMenu();
     }
 
@@ -32,11 +34,7 @@ export default class MainScreen {
                     this.prompt("Pressione ENTER para continuar...");
                     break;
                 case 2:
-                    try {
-                      this.register.registerClient();
-                    } catch (error: any) {
-                      console.log(`Erro: ${error.message}`);
-                    }
+                    this.clientRegister.addClient();
                     this.prompt("\nPressione ENTER para continuar...\n");
                     break;
                 case 3:
@@ -52,7 +50,7 @@ export default class MainScreen {
                     this.prompt("Pressione ENTER para continuar...");
                     break;
                 case 6:
-                    this.clientController.listClients();
+                    this.control.db.listAll();
                     this.prompt("Pressione ENTER para continuar...");
                     break;
                 case 7:
