@@ -1,70 +1,59 @@
-// import Sneaker from "./Sneaker";
-// import Sale from "./Discount";
+import Sneaker from "./Sneaker";
 
-// export default class SneakersInfo extends Sneaker {
-//     private colors: string[] = [];
-//     private gender: string = "";
-//     private sizes: number[] = [];
-//     private releaseDate: string = "";
-//     private promotions: Sale[] = [];
+export default class SneakersInfo extends Sneaker {
+    private colors: string = "";
+    private gender: string = "";
+    private sizes: number[];
+    private releaseDate: string;
 
-//     public getColors(): string[] {
-//         return this.colors;
-//     }
+    constructor (
+        brand: string,
+        model: string,
+        price: number,
+        stock: number,
+        colors: string,
+        gender: string,
+        sizes: number[],
+        releaseDate: string,
+    ) {
+        super(brand, model, price, stock);
 
-//     public getGender(): string {
-//         return this.gender;
-//     }
+        this.colors = colors;
+        this.gender = gender;
+        this.sizes = sizes;
+        this.releaseDate = releaseDate;
 
-//     public getReleaseDate(): string {
-//         return this.releaseDate;
-//     }
+    }
 
-//     public getSizes(): number[] {
-//         return this.sizes;
-//     }
+    public getColors(): string {
+        return this.colors;
+    }
 
-//     public getPromotions(): Sale[] {
-//         return this.promotions;
-//     }
+    public getGender(): string {
+        return this.gender;
+    }
 
-//     public setColors(colors: string[]): void {
-//         this.colors = colors;
-//     }
+    public getSizes(): number[] {
+        return this.sizes;
+    }
 
-//     public setGender(gender: string): void {
-//         this.gender = gender;
-//     }
+    public getReleaseDate(): string {
+        return this.releaseDate;
+    }
 
-//     public setReleaseDate(releaseDate: string): void {
-//         this.releaseDate = releaseDate;
-//     }
+    public setColors(colors: string): void {
+        this.colors = colors;
+    }
 
-//     public setSizes(sizes: number[]): void {
-//         this.sizes = sizes;
-//     }
+    public setGender(gender: string): void {
+        this.gender = gender;
+    }
 
-//     public addColor(color: string): void {
-//         this.colors.push(color);
-//     }
+    public setSizes(sizes: number[]): void {
+        this.sizes = sizes;
+    }
 
-//     public removeColor(color: string): void {
-//         this.colors = this.colors.filter(c => c !== color);
-//     }
-
-//     public addSize(size: number): void {
-//         this.sizes.push(size);
-//     }
-
-//     public removeSize(size: number): void {
-//         this.sizes = this.sizes.filter(s => s !== size);
-//     }
-
-//     public addPromotion(promotion: Sale): void {
-//         this.promotions.push(promotion);
-//     }
-
-//     public removePromotion(promotionId: number): void {
-//         this.promotions = this.promotions.filter(promotion => promotion.getId() !== promotionId);
-//     }
-// }
+    public setReleaseDate(releaseDate: string): void {
+        this.releaseDate = releaseDate;
+    }
+}

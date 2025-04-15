@@ -1,6 +1,7 @@
 import PromptSync from "prompt-sync";
 import MainController from "../control/MainController";
 import Sneaker from "../model/Sneaker";
+import SneakersInfo from "../model/SneakersInfo";
 
 export default class SneakerRegister{
     private prompt = PromptSync();
@@ -17,8 +18,18 @@ export default class SneakerRegister{
         let model = this.getInput("Modelo: ");
         let price = parseFloat(this.getValidPriceInput("Preço: "));
         let stock = parseInt(this.getInput("Estoque: "));
+        let colors = this.getInput("Cor(es): ");
+        let gender = this.getInput("Gênero: ");
+        let sizeInput = this.getInput("Tamanhos disponíveis (separados por vírgula): ");
+        
+        let sizes = sizeInput
+            .split(",")
+            .map(s => parseInt(s.trim()))
+            .filter(n => !isNaN(n));
 
-        let sneaker = new Sneaker(brand, model, price, stock);
+        let releaseDate = this.getValidDateInput("Data de lançamento (dd-mm-yyyy): ");
+
+        let sneaker = new SneakersInfo(brand, model, price, stock, colors, gender, sizes, releaseDate);
         this.control.db.addNewSneaker(sneaker);
         console.log(`\nSneaker ${sneaker.getBrand()} ${sneaker.getModel()} cadastrado com sucesso!\n`);
     }
@@ -46,5 +57,18 @@ export default class SneakerRegister{
             console.log("Preço inválido. Use o formato 100 ou 100.99 (máximo 2 casas decimais).");
         }
     }
+
+    private getValidDateInput(promptText: string): string {
+        const dateRegex = /^(0[1-9]|[12][0-9]|3[01])[-](0[1-9]|1[0-2])[-](19|20)\d{2}$/;
     
+        while (true) {
+            const input = this.prompt(promptText).trim();
+    
+            if (dateRegex.test(input)) {
+                return input;
+            }
+    
+            console.log("Data inválida. Use o formato dd-mm-yyyy (ex: 25-12-2024).");
+        }
+    }      
 }
