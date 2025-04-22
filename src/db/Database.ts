@@ -46,7 +46,7 @@ export default class Database{
         }
 
         for (const sneaker of this.sneakerDb) {
-            console.log(`ID do Produto: ${sneaker.getId()} | Nome: ${sneaker.getBrand()} ${sneaker.getModel()} | Preço: ${sneaker.getPrice()} | Estoque: ${sneaker.getStock()} | Cores: ${sneaker.getColors()} | Gênero: ${sneaker.getGender()} | Tamanhos: ${sneaker.getSizes()} | Data de Lançamento: ${sneaker.getReleaseDate()}`);
+            console.log(sneaker.getInfo());
         }
     }
 
@@ -59,7 +59,7 @@ export default class Database{
         }
 
         for (const sale of this.saleDb) {
-            console.log(`ID da Venda: ${sale.getId()} | Nome do Comprador: ${sale.getClient()} | Sneaker Vendido: ${sale.getSneaker()}`);
+            console.log(`ID da Venda: ${sale.getId()} | Nome do Comprador: ${sale.getClient()} | Sneaker Vendido: ${sale.getSneaker()} | Enviar para: ${sale.getAddress}`);
         }
     }
 }

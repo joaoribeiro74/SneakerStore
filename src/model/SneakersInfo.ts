@@ -56,4 +56,8 @@ export default class SneakersInfo extends Sneaker {
     public setReleaseDate(releaseDate: string): void {
         this.releaseDate = releaseDate;
     }
+
+    public getInfo(): string {
+        return `ID do Produto: ${super.getId()} | Nome: ${super.getBrand()} ${super.getModel()} | Preço: ${super.getPrice()} | Estoque: ${super.getStock()} | Cores: ${this.getColors()} | Gênero: ${this.getGender()} | Tamanhos: ${this.getSizes()} | Data de Lançamento: ${this.getReleaseDate()}`
+    }
 }

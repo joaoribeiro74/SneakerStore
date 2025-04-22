@@ -40,4 +40,8 @@ export default class Sale{
     public setClient(client: Client) {
         this.client = client;
     }
+
+    public getAddress(): string {
+        return `Endereço: ${this.client.getAddress()}, ${this.client.getDistrict()}, ${this.client.getCity()} - ${this.client.getState()}, ${this.client.getCountry()}`
+    }
 }

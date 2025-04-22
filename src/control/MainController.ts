@@ -1,4 +1,5 @@
 import Database from "../db/Database";
+import Client from "../model/Client";
 import MainScreen from "../view/MainScreen";
 
 export default class MainController{
