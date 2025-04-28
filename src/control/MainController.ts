@@ -8,4 +8,8 @@ export default class MainController{
     constructor(){
        new MainScreen(this);
     }
+
+    public getNewClient(clientName: string, clientEmail: string, cep: string, city: string, state: string, country: string, district: string, address: string, reference: string): Client {
+        return new Client(clientName, clientEmail, cep, city, state, country, district, address, reference!);
+    }
 }

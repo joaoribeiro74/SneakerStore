@@ -23,7 +23,7 @@ export default class ClientRegister {
         let address = this.getInput("Endereço: ");
         let reference = this.getOptionalInput("Referência (Opcional): ");
 
-        let client = new Client(clientName, clientEmail, cep, city, state, country, district, address, reference!);
+        let client: Client = this.control.getNewClient(clientName, clientEmail, cep, city, state, country, district, address, reference!);
         this.control.db.addNewClient(client);
         console.log(`\nCliente ${client.getClientName()} cadastrado com sucesso!`);
     }
