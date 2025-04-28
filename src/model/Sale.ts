@@ -16,11 +16,6 @@ export default class Sale{
         this.client = client;
     }
 
-    public doSale(sneaker: Sneaker, client: Client){
-        this.sneaker = sneaker;
-        this.client = client;
-    }
-
     public getId(): number{
         return this.id;
     }
@@ -41,7 +36,13 @@ export default class Sale{
         this.client = client;
     }
 
-    public getAddress(): string {
-        return `Endereço: ${this.client.getAddress()}, ${this.client.getDistrict()}, ${this.client.getCity()} - ${this.client.getState()}, ${this.client.getCountry()}`
+    getAddress(): string;
+    getAddress(includeReference: boolean): string;
+    public getAddress(includeReference: boolean = true): string {
+        let address = `${this.client.getAddress()}, ${this.client.getDistrict()}, ${this.client.getCity()} - ${this.client.getState()}, ${this.client.getCountry()}`;
+        if (includeReference && this.client.getReference()) {
+            address += ` (Referência: ${this.client.getReference()})`;
+        }
+        return address;
     }
 }

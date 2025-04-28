@@ -107,6 +107,6 @@ export default class Client{
     }
 
     setReference(reference: string): void {
-        this.reference = reference;
+        this.reference = reference ?? "Sem Referência";
     }
 }

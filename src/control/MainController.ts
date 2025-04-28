@@ -1,5 +1,7 @@
 import Database from "../db/Database";
 import Client from "../model/Client";
+import Sale from "../model/Sale";
+import SneakersInfo from "../model/SneakersInfo";
 import MainScreen from "../view/MainScreen";
 
 export default class MainController{
@@ -11,5 +13,26 @@ export default class MainController{
 
     public getNewClient(clientName: string, clientEmail: string, cep: string, city: string, state: string, country: string, district: string, address: string, reference: string): Client {
         return new Client(clientName, clientEmail, cep, city, state, country, district, address, reference!);
+    }
+
+    public getNewSneaker(brand: string, model: string, price: number, stock: number, colors: string, gender: string, sizes: number[], releaseDate: string): SneakersInfo {
+        return new SneakersInfo(brand, model, price, stock, colors, gender, sizes, releaseDate);
+    }
+
+    public getNewSale(sneakerId: number, clientId: number): Sale | null {
+        const client = this.db.getClientById(clientId);
+        const sneaker = this.db.getSneakerById(sneakerId);
+
+        if (!client) {
+            console.log("\nCliente não encontrado.");
+            return null;
+        }
+
+        if (!sneaker) {
+            console.log("\nSneaker não encontrado.");
+            return null;
+        }
+
+        return new Sale(sneaker, client); 
     }
 }

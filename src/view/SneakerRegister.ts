@@ -29,9 +29,10 @@ export default class SneakerRegister{
 
         let releaseDate = this.getValidDateInput("Data de lançamento (dd-mm-yyyy): ");
 
-        let sneaker = new SneakersInfo(brand, model, price, stock, colors, gender, sizes, releaseDate);
+        let sneaker: SneakersInfo = this.control.getNewSneaker(brand, model, price, stock, colors, gender, sizes, releaseDate);
         this.control.db.addNewSneaker(sneaker);
-        console.log(`\nSneaker ${sneaker.getBrand()} ${sneaker.getModel()} cadastrado com sucesso!\n`);
+
+        console.log(`\nSneaker ${sneaker.getBrand()} ${sneaker.getModel()} cadastrado com sucesso!`);
     }
 
     private getInput(promptText: string): string {

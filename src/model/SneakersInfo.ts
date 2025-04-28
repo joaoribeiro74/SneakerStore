@@ -5,6 +5,7 @@ export default class SneakersInfo extends Sneaker {
     private gender: string = "";
     private sizes: number[];
     private releaseDate: string;
+    private discountPercentage: number = 0;
 
     constructor (
         brand: string,
@@ -57,7 +58,26 @@ export default class SneakersInfo extends Sneaker {
         this.releaseDate = releaseDate;
     }
 
+    public applyDiscount(discount: number): void {
+        this.discountPercentage = discount;
+    }
+
+    public override getPrice(): number {
+        let originalPrice = super.getPrice();
+        if (this.discountPercentage > 0) {
+            let discountAmount = (this.discountPercentage / 100) * originalPrice;
+            return originalPrice - discountAmount; 
+        }
+        return originalPrice;
+    }
+
     public getInfo(): string {
-        return `ID do Produto: ${super.getId()} | Nome: ${super.getBrand()} ${super.getModel()} | Preço: ${super.getPrice()} | Estoque: ${super.getStock()} | Cores: ${this.getColors()} | Gênero: ${this.getGender()} | Tamanhos: ${this.getSizes()} | Data de Lançamento: ${this.getReleaseDate()}`
+        let sneakerInfo = `ID do Produto: ${super.getId()} | Nome: ${super.getBrand()} ${super.getModel()} | Estoque: ${super.getStock()} | Cores: ${this.getColors()} | Gênero: ${this.getGender()} | Tamanhos: ${this.getSizes()} | Data de Lançamento: ${this.getReleaseDate()}`;
+        if (this.discountPercentage > 0) {
+            sneakerInfo += ` | Preço: ${super.getPrice()} | Desconto: ${this.discountPercentage}% | Preço com Desconto: ${this.getPrice().toFixed(2)}`;
+        } else {
+            sneakerInfo += ` | Preço: ${super.getPrice()}`;
+        }
+        return sneakerInfo;
     }
 }
