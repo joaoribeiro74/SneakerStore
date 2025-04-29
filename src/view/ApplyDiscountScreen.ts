@@ -1,6 +1,6 @@
 import promptSync from 'prompt-sync';
 import MainController from '../control/MainController';
-import SneakersInfo from '../model/SneakersInfo';
+import Sneaker from '../model/Sneaker';
 
 export default class ApplyDiscountScreen {
     private prompt = promptSync();
@@ -16,7 +16,7 @@ export default class ApplyDiscountScreen {
 
         let sneaker = this.control.db.getSneakerById(sneakerId);
 
-        if (sneaker instanceof SneakersInfo) {
+        if (sneaker instanceof Sneaker) {
             sneaker.applyDiscount(discountPercentage);
 
             console.log("\nDesconto aplicado com sucesso!");

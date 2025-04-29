@@ -1,7 +1,6 @@
 import PromptSync from "prompt-sync";
 import MainController from "../control/MainController";
 import Sneaker from "../model/Sneaker";
-import SneakersInfo from "../model/SneakersInfo";
 
 export default class SneakerRegister{
     private prompt = PromptSync();
@@ -29,7 +28,7 @@ export default class SneakerRegister{
 
         let releaseDate = this.getValidDateInput("Data de lançamento (dd-mm-yyyy): ");
 
-        let sneaker: SneakersInfo = this.control.getNewSneaker(brand, model, price, stock, colors, gender, sizes, releaseDate);
+        let sneaker: Sneaker = this.control.getNewSneaker(brand, model, price, stock, colors, gender, sizes, releaseDate);
         this.control.db.addNewSneaker(sneaker);
 
         console.log(`\nSneaker ${sneaker.getBrand()} ${sneaker.getModel()} cadastrado com sucesso!`);

@@ -1,10 +1,10 @@
 import Client from "../model/Client";
 import Sale from "../model/Sale";
-import SneakersInfo from "../model/SneakersInfo";
+import Sneaker from "../model/Sneaker";
 
 export default class Database{
     private clientDb: Client[] = [];
-    private sneakerDb: SneakersInfo[] = [];
+    private sneakerDb: Sneaker[] = [];
     private saleDb: Sale[] = [];
 
     public addNewClient(client: Client): void {
@@ -15,11 +15,11 @@ export default class Database{
         return this.clientDb.find(client => client.getId() === id) || null;
     }
 
-    public addNewSneaker(sneaker: SneakersInfo): void {
+    public addNewSneaker(sneaker: Sneaker): void {
         this.sneakerDb.push(sneaker);
     }
 
-    public getSneakerById(id: number): SneakersInfo | null {
+    public getSneakerById(id: number): Sneaker | null {
         return this.sneakerDb.find(sneaker => sneaker.getId() === id) || null;
     }
 
@@ -62,7 +62,7 @@ export default class Database{
         }
 
         for (const sale of this.saleDb) {
-            console.log(`ID da Venda: ${sale.getId()} | Nome do Comprador: ${sale.getClient().getClientName()} | Sneaker Vendido: ${sale.getSneaker().getBrand()} ${sale.getSneaker().getModel()} | Enviar para: ${sale.getAddress()}`);
+            console.log(`ID da Venda: ${sale.getId()} | Nome do Comprador: ${sale.getClient().getClientName()} | Sneaker Vendido: ${sale.getSneaker().getBrand()} ${sale.getSneaker().getModel()} | Enviar para: ${sale.getFullAddress()}`);
         }
     }
 }

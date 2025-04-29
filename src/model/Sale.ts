@@ -36,9 +36,9 @@ export default class Sale{
         this.client = client;
     }
 
-    getAddress(): string;
-    getAddress(includeReference: boolean): string;
-    public getAddress(includeReference: boolean = true): string {
+    getFullAddress(): string;
+    getFullAddress(includeReference: boolean): string;
+    public getFullAddress(includeReference: boolean = true): string {
         let address = `${this.client.getAddress()}, ${this.client.getDistrict()}, ${this.client.getCity()} - ${this.client.getState()}, ${this.client.getCountry()}`;
         if (includeReference && this.client.getReference()) {
             address += ` (Referência: ${this.client.getReference()})`;
