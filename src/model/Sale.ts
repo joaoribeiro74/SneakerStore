@@ -1,19 +1,37 @@
+import Address from "./Address";
 import Client from "./Client";
 import Sneaker from "./Sneaker";
+import Stock from "./Stock";
 
 export default class Sale{
     private static nextId: number = 1;
     private id: number = 0;
     private sneaker: Sneaker;
     private client: Client;
+    private deliveryAddress: Address;
+    private stock: Stock;
 
     constructor(
         sneaker: Sneaker,
         client: Client,
+        deliveryAddress: Address,
+        stock: Stock
     ) {
+        if (!this.isValidDeliveryAddress(client, deliveryAddress)) {
+            throw new Error("Endereço de entrega inválido. Escolha um endereço cadastrado.")
+        }
+
+        if (!stock.hasEnoughStock(1)) {
+            throw new Error("Estoque insuficiente para o produto.");
+        }
+
         this.id = Sale.nextId++;
         this.sneaker = sneaker;
         this.client = client;
+        this.deliveryAddress = deliveryAddress;
+        this.stock = stock;
+
+        this.stock.removeStock(1);
     }
 
     public getId(): number{
@@ -28,6 +46,10 @@ export default class Sale{
         return this.client;
     }
 
+    public getDeliveryAddress(): Address {
+        return this.deliveryAddress;
+    }
+
     public setSneaker(sneaker: Sneaker){
         this.sneaker = sneaker;
     }
@@ -36,12 +58,20 @@ export default class Sale{
         this.client = client;
     }
 
-    getFullAddress(): string;
-    getFullAddress(includeReference: boolean): string;
-    public getFullAddress(includeReference: boolean = true): string {
-        let address = `${this.client.getAddress()}, ${this.client.getDistrict()}, ${this.client.getCity()} - ${this.client.getState()}, ${this.client.getCountry()}`;
-        if (includeReference && this.client.getReference()) {
-            address += ` (Referência: ${this.client.getReference()})`;
+     public setDeliveryAddress(address: Address) {
+        this.deliveryAddress = address;
+    }
+
+    private isValidDeliveryAddress(client: Client, address: Address): boolean {
+        return client.getAddresses().some(addr => addr === address);
+    }
+
+    getDeliveryAddressFormatted(): string;
+    getDeliveryAddressFormatted(includeReference: boolean): string;
+    public getDeliveryAddressFormatted(includeReference: boolean = true): string {
+        let address = `${this.deliveryAddress.getAddress()}, ${this.deliveryAddress.getDistrict()}, ${this.deliveryAddress.getCity()} - ${this.deliveryAddress.getState()}, ${this.deliveryAddress.getCountry()}`;
+        if (includeReference && this.deliveryAddress.getReference()) {
+            address += ` (Referência: ${this.deliveryAddress.getReference()})`;
         }
         return address;
     }

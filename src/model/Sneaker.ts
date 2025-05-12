@@ -4,7 +4,6 @@ export default class Sneaker {
     private brand: string = "";
     private model: string = "";
     private price: number = 0;
-    private stock: number = 0;
     private colors: string = "";
     private gender: string = "";
     private sizes: number[];
@@ -15,7 +14,6 @@ export default class Sneaker {
         brand: string,
         model: string,
         price: number,
-        stock: number,
         colors: string,
         gender: string,
         sizes: number[],
@@ -25,7 +23,6 @@ export default class Sneaker {
         this.brand = brand;
         this.model = model;
         this.price = price;
-        this.stock = stock;
         this.colors = colors;
         this.gender = gender;
         this.sizes = sizes;
@@ -48,10 +45,6 @@ export default class Sneaker {
         return this.price;
     }
 
-    public getStock(): number {
-        return this.stock;
-    }
-
     public setBrand(brand: string): void {
         this.brand = brand;
     }
@@ -62,10 +55,6 @@ export default class Sneaker {
 
     public setPrice(price: number): void {
         this.price = price;
-    }
-
-    public setStock(stock: number): void {
-        this.stock = stock;
     }
 
     public getColors(): string {
@@ -114,7 +103,7 @@ export default class Sneaker {
     }
 
     public getInfo(): string {
-        let sneaker = `ID do Produto: ${this.getId()} | Nome: ${this.getBrand()} ${this.getModel()} | Estoque: ${this.getStock()} | Cores: ${this.getColors()} | Gênero: ${this.getGender()} | Tamanhos: ${this.getSizes()} | Data de Lançamento: ${this.getReleaseDate()} | Preço: ${this.getPrice()}`;
+        let sneaker = `ID do Produto: ${this.getId()} | Nome: ${this.getBrand()} ${this.getModel()} | Cores: ${this.getColors()} | Gênero: ${this.getGender()} | Tamanhos: ${this.getSizes()} | Data de Lançamento: ${this.getReleaseDate()} | Preço: ${this.getPrice()}`;
         if (this.discountPercentage > 0) {
             sneaker += ` | Desconto: ${this.discountPercentage}% | Preço com Desconto: ${this.getPrice().toFixed(2)}`;
         } 

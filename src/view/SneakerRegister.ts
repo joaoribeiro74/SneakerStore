@@ -1,6 +1,7 @@
 import PromptSync from "prompt-sync";
 import MainController from "../control/MainController";
 import Sneaker from "../model/Sneaker";
+import Stock from "../model/Stock";
 
 export default class SneakerRegister{
     private prompt = PromptSync();
@@ -16,7 +17,6 @@ export default class SneakerRegister{
         let brand = this.getInput("Marca: ");
         let model = this.getInput("Modelo: ");
         let price = parseFloat(this.getValidPriceInput("Preço: "));
-        let stock = parseInt(this.getInput("Estoque: "));
         let colors = this.getInput("Cor(es): ");
         let gender = this.getInput("Gênero: ");
         let sizeInput = this.getInput("Tamanhos disponíveis (separados por vírgula): ");
@@ -27,9 +27,12 @@ export default class SneakerRegister{
             .filter(n => !isNaN(n));
 
         let releaseDate = this.getValidDateInput("Data de lançamento (dd-mm-yyyy): ");
+        let quantity = parseInt(this.getInput("Estoque: "));
 
-        let sneaker: Sneaker = this.control.getNewSneaker(brand, model, price, stock, colors, gender, sizes, releaseDate);
-        this.control.db.addNewSneaker(sneaker);
+        let sneaker: Sneaker = this.control.getNewSneaker(brand, model, price, colors, gender, sizes, releaseDate);
+        let stock: Stock = this.control.getNewStock(sneaker, quantity);
+        
+        this.control.db.addNewStock(stock);
 
         console.log(`\nSneaker ${sneaker.getBrand()} ${sneaker.getModel()} cadastrado com sucesso!`);
     }

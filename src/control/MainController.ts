@@ -1,7 +1,9 @@
 import Database from "../db/Database";
+import Address from "../model/Address";
 import Client from "../model/Client";
 import Sale from "../model/Sale";
 import Sneaker from "../model/Sneaker";
+import Stock from "../model/Stock";
 import MainScreen from "../view/MainScreen";
 
 export default class MainController{
@@ -11,28 +13,39 @@ export default class MainController{
        new MainScreen(this);
     }
 
-    public getNewClient(clientName: string, clientEmail: string, cep: string, city: string, state: string, country: string, district: string, address: string, reference: string): Client {
-        return new Client(clientName, clientEmail, cep, city, state, country, district, address, reference!);
+    public getNewClient(name: string, email: string, cep: string, city: string, state: string, country: string, district: string, address: string, reference: string): Client {
+        const client = new Client(name, email);
+        const clientAddress = new Address(cep, city, state, country, district, address, reference)
+        client.addAddress(clientAddress);
+        return client;
     }
 
-    public getNewSneaker(brand: string, model: string, price: number, stock: number, colors: string, gender: string, sizes: number[], releaseDate: string): Sneaker {
-        return new Sneaker(brand, model, price, stock, colors, gender, sizes, releaseDate);
+    public getNewSneaker(brand: string, model: string, price: number, colors: string, gender: string, sizes: number[], releaseDate: string): Sneaker {
+        return new Sneaker(brand, model, price, colors, gender, sizes, releaseDate);
     }
+
+    public getNewStock(sneaker: Sneaker, quantity: number): Stock {
+        return new Stock(sneaker, quantity);
+    }
+
 
     public getNewSale(sneakerId: number, clientId: number): Sale | null {
-        let client = this.db.getClientById(clientId);
-        let sneaker = this.db.getSneakerById(sneakerId);
+        const client = this.db.getClientById(clientId);
+        const stock = this.db.getStockBySneakerId(sneakerId);
 
         if (!client) {
             console.log("\nCliente não encontrado.");
             return null;
         }
 
-        if (!sneaker) {
-            console.log("\nSneaker não encontrado.");
+        if (!stock) {
+            console.log("\nSneaker não encontrado no estoque.");
             return null;
         }
 
-        return new Sale(sneaker, client); 
+        const sneaker = stock.getSneaker();
+        const address = client.getAddresses()[0];
+
+        return new Sale(sneaker, client, address, stock);
     }
 }

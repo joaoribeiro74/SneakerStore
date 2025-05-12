@@ -1,11 +1,13 @@
 import Client from "../model/Client";
 import Sale from "../model/Sale";
 import Sneaker from "../model/Sneaker";
+import Stock from "../model/Stock";
 
 export default class Database{
     private clientDb: Client[] = [];
     private sneakerDb: Sneaker[] = [];
     private saleDb: Sale[] = [];
+    private stockDb: Stock [] = [];
 
     public addNewClient(client: Client): void {
         this.clientDb.push(client);
@@ -27,6 +29,15 @@ export default class Database{
         this.saleDb.push(sale);
     }
 
+    public addNewStock(stock: Stock): void {
+        this.stockDb.push(stock);
+    }
+
+    public getStockBySneakerId(id: number): Stock | null {
+        const stock = this.stockDb.find(stock => stock.getSneaker().getId() === id);
+        return stock || null;
+    }
+
     public listAllClients(): void {
         console.log("\n--- Lista de Clientes ---\n");
 
@@ -36,7 +47,9 @@ export default class Database{
         }
 
         for (const client of this.clientDb) {
-            console.log(`ID do Cliente: ${client.getId()} | Nome: ${client.getClientName()} | Email: ${client.getClientEmail()} | Endereço: ${client.getAddress()}, ${client.getDistrict()}, ${client.getCity()} - ${client.getState()}, ${client.getCountry()}`);
+            const address = client.getAddresses()[0];
+
+            console.log(`ID do Cliente: ${client.getId()} | Nome: ${client.getName()} | Email: ${client.getEmail()} | Endereço: ${address.getAddress()}, ${address.getDistrict()}, ${address.getCity()} - ${address.getState()}, ${address.getCountry()}`);
         }
     }
 
@@ -62,7 +75,7 @@ export default class Database{
         }
 
         for (const sale of this.saleDb) {
-            console.log(`ID da Venda: ${sale.getId()} | Nome do Comprador: ${sale.getClient().getClientName()} | Sneaker Vendido: ${sale.getSneaker().getBrand()} ${sale.getSneaker().getModel()} | Enviar para: ${sale.getFullAddress()}`);
+            console.log(`ID da Venda: ${sale.getId()} | Nome do Comprador: ${sale.getClient().getName()} | Sneaker Vendido: ${sale.getSneaker().getBrand()} ${sale.getSneaker().getModel()} | Enviar para: ${sale.getDeliveryAddressFormatted()}`);
         }
     }
 }
