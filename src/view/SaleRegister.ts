@@ -22,7 +22,7 @@ export default class SaleRegister {
         if (sale) {
             this.control.db.addNewSale(sale);
             console.log(`Venda realizada com sucesso!\n`);
-            console.log(`Cliente: ${sale.getClient().getClientName()} | Sneaker: ${sale.getSneaker().getBrand()} ${sale.getSneaker().getModel()}`);
+            console.log(`Cliente: ${sale.getClient().getName()} | Sneaker: ${sale.getSneaker().getBrand()} ${sale.getSneaker().getModel()}`);
         } else {
             console.log("\nNão foi possível criar a venda. Verifique os IDs e tente novamente.");
         }

@@ -1,10 +1,12 @@
 import Client from "../model/Client";
 import Sale from "../model/Sale";
+import Seller from "../model/Seller";
 import Sneaker from "../model/Sneaker";
 import Stock from "../model/Stock";
 
 export default class Database{
     private clientDb: Client[] = [];
+    private sellerDb: Seller[] = [];
     private sneakerDb: Sneaker[] = [];
     private saleDb: Sale[] = [];
     private stockDb: Stock [] = [];
@@ -15,6 +17,14 @@ export default class Database{
 
     public getClientById(id: number): Client | null {
         return this.clientDb.find(client => client.getId() === id) || null;
+    }
+
+    public addNewSeller(seller: Seller): void {
+        this.sellerDb.push(seller);
+    }
+
+    public getSellerById(id: number): Seller | null {
+        return this.sellerDb.find(seller => seller.getId() === id) || null;
     }
 
     public addNewSneaker(sneaker: Sneaker): void {
@@ -50,6 +60,19 @@ export default class Database{
             const address = client.getAddresses()[0];
 
             console.log(`ID do Cliente: ${client.getId()} | Nome: ${client.getName()} | Email: ${client.getEmail()} | Endereço: ${address.getAddress()}, ${address.getDistrict()}, ${address.getCity()} - ${address.getState()}, ${address.getCountry()}`);
+        }
+    }
+
+    public listAllSellers(): void {
+        console.log("\n--- Lista de Vendedores ---\n");
+
+        if (this.sellerDb.length === 0) {
+            console.log("Nenhum vendedor cadastrado.\n");
+            return;
+        }
+
+        for (const seller of this.sellerDb) {
+            console.log(`ID do Vendedor: ${seller.getId()} | Nome: ${seller.getName()} | Email: ${seller.getEmail()} | Balanço: ${seller.getBalance()} | Vendas: ${seller.getSales()}`);
         }
     }
 

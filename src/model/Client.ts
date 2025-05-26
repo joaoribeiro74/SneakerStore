@@ -1,6 +1,7 @@
 import Address from "./Address";
 import Sale from "./Sale";
-import User, { UserType } from "./User";
+import User from "./User";
+import { UserType } from "./UserType";
 
 export default class Client extends User {
     private addresses: Address[] = [];

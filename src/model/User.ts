@@ -1,14 +1,11 @@
-export enum UserType {
-    client = "Cliente",
-    seller = "Vendedor"
-}
+import { UserType } from "./UserType";
 
 export default class User {
     private static nextId: number = 1;
-    protected id: number;
-    protected name: string = "";
-    protected email: string = "";
-    protected type: UserType;
+    private id: number;
+    private name: string = "";
+    private email: string = "";
+    private type: UserType;
 
     constructor(name: string, email: string, type: UserType) {
         this.id = User.nextId++;

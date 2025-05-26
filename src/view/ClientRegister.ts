@@ -25,7 +25,7 @@ export default class ClientRegister {
 
         let client: Client = this.control.getNewClient(clientName, clientEmail, cep, city, state, country, district, address, reference!);
         this.control.db.addNewClient(client);
-        console.log(`\nCliente ${client.getClientName()} cadastrado com sucesso!`);
+        console.log(`\nCliente ${client.getName()} cadastrado com sucesso!`);
     }
 
     private getInput(promptText: string): string {
