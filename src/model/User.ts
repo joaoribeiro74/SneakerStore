@@ -1,14 +1,13 @@
+import IUser from "./IUser";
 import { UserType } from "./UserType";
 
-export default class User {
-    private static nextId: number = 1;
-    private id: number;
-    private name: string = "";
-    private email: string = "";
-    private type: UserType;
+export default abstract class User implements IUser {
+    protected id!: number;
+    protected name: string = "";
+    protected email: string = "";
+    protected type: UserType;
 
     constructor(name: string, email: string, type: UserType) {
-        this.id = User.nextId++;
         this.name = name;
         this.email = email;
         this.type = type;
@@ -38,7 +37,5 @@ export default class User {
         this.email = email;
     }
 
-    public displayInfo(): string {
-        return `${this.type} ${this.name} | Email: ${this.email}`;
-    }
+    abstract displayInfo(): string;
 }
