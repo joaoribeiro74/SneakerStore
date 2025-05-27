@@ -21,11 +21,23 @@ describe("Client class", () => {
       "Brasil",
       "Trianon",
       "Rua Xavier da Silva, 400",
+      "Perto da Lagoa"
+    );
+    const clientAddress2 = new Address(
+      "05494-090",
+      "São Paulo",
+      "SP",
+      "Brasil",
+      "Vila Madalena",
+      "Rua Madalena, 1204",
       ""
     );
 
     client.addAddress(clientAddress);
+    client.addAddress(clientAddress2);
 
-    expect(client.getAddresses()).toContain(clientAddress);
+    expect(client.getAddresses()).toEqual(expect.arrayContaining([clientAddress, clientAddress2]));
+
+    expect(client.getAddresses().length).toBe(2);
   });
 });
