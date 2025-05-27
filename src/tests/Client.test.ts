@@ -1,5 +1,6 @@
 import Client from "../model/Client"; // ajuste o caminho conforme sua estrutura
 import { UserType } from "../model/UserType";
+import Address from "../model/Address";
 
 describe("Client class", () => {
   it("deve criar um cliente com nome, email e id corretos", () => {
@@ -8,15 +9,23 @@ describe("Client class", () => {
     expect(client.getName()).toBe("João");
     expect(client.getEmail()).toBe("joao@email.com");
     expect(client.getType()).toBe(UserType.client);
-    expect(client.getId()).toBeGreaterThan(0); // ID separado de seller
+    expect(client.getId()).toBeGreaterThan(0);
   });
 
   it("deve adicionar um endereço corretamente", () => {
     const client = new Client("Maria", "maria@email.com");
-    const address = { street: "Rua A", number: 123, city: "SP" } as any; // mock simplificado
+    const clientAddress = new Address(
+      "85012-230",
+      "Guarapuava",
+      "PR",
+      "Brasil",
+      "Trianon",
+      "Rua Xavier da Silva, 400",
+      ""
+    );
 
-    client.addAddress(address);
+    client.addAddress(clientAddress);
 
-    expect(client.getAddresses()).toContain(address);
+    expect(client.getAddresses()).toContain(clientAddress);
   });
 });

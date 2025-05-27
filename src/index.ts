@@ -1,3 +1,3 @@
-import MainController from "./control/MainController";
+import MainController from "./controller/MainController";
 
 new MainController();
