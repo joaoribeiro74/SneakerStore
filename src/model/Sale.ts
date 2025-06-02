@@ -2,6 +2,8 @@ import Address from "./Address";
 import Client from "./Client";
 import Sneaker from "./Sneaker";
 import Stock from "./Stock";
+import InvalidAddressException from "../exceptions/InvalidAddressException";
+import OutOfStockException from "../exceptions/OutOfStockException";
 
 export default class Sale {
   private static nextId: number = 1;
@@ -18,13 +20,11 @@ export default class Sale {
     stock: Stock
   ) {
     if (!this.isValidDeliveryAddress(client, deliveryAddress)) {
-      throw new Error(
-        "Endereço de entrega inválido. Escolha um endereço cadastrado."
-      );
+      throw new InvalidAddressException();
     }
 
     if (!stock.hasEnoughStock(1)) {
-      throw new Error("Estoque insuficiente para o produto.");
+      throw new OutOfStockException();
     }
 
     this.id = Sale.nextId++;
