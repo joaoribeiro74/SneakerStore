@@ -19,7 +19,7 @@ describe("Seller class", () => {
     it("deve adicionar uma venda corretamente", () => {
         const seller = new Seller("Maria", "maria@email.com");
         
-        const sneaker = new Sneaker("Nike", "Air Jordan 1 Dunk Low", 1000, "Branco e Marrom", "Masculino", [40,41,42,43], "31-12-2024" );
+        const sneaker = new Sneaker("Nike", "Air Jordan 1 Dunk Low", 1000, "Branco e Marrom", "Masculino", [40], "31-12-2024" );
         const client = new Client("José", "jose@email.com");
         const address = new Address("85012-230", "Guarapuava", "PR", "Brasil", "Trianon", "Rua Xavier da Silva, 400", "Próximo ao mercado");
         const stock = new Stock(sneaker, 10);
