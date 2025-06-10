@@ -28,50 +28,59 @@ export default class MainScreen {
       console.clear();
       let choice = parseInt(
         this.prompt(
-          "\nEscolha:\n" +
-            " 1. Cadastro de Tênis\n" +
-            " 2. Cadastro de Cliente\n" +
-            " 3. Aplicar Desconto no Tênis\n" +
-            " 4. Listar Produtos\n" +
-            " 5. Listar Clientes\n" +
-            " 6. Criar Pedidos\n" +
-            " 7. Histórico de Vendas\n" +
-            " 8. Sair\n> "
+          "\nEntrar como:\n" +
+            " 1. Vendedor\n" +
+            " 2. Cliente\n" +
+            " 3. Sair\n> "
         )
-      );
+      )
+      // let choice = parseInt(
+      //  this.prompt(
+      //    "\nEscolha:\n" +
+      //      " 1. Cadastro de Tênis\n" +
+      //      " 2. Cadastro de Cliente\n" +
+      //      " 3. Aplicar Desconto no Tênis\n" +
+      //      " 4. Listar Produtos\n" +
+      //      " 5. Listar Clientes\n" +
+      //      " 6. Criar Pedidos\n" +
+      //      " 7. Histórico de Vendas\n" +
+      //      " 8. Sair\n> "
+      //  )
+      //);
 
       switch (choice) {
         case 1:
-          this.sneakerRegister.addSneaker();
-          this.prompt("\nPressione ENTER para continuar...");
-          break;
-        case 2:
-          this.clientRegister.addClient();
-          this.prompt("\nPressione ENTER para continuar...\n");
-          break;
-        case 3:
-          this.applyDiscount.applyDiscountToSneaker();
-          this.prompt("\nPressione ENTER para continuar...");
-          break;
-        case 4:
-          this.control.db.listAllSneakers();
-          this.prompt("\nPressione ENTER para continuar...");
-          break;
-        case 5:
-          this.control.db.listAllClients();
-          this.prompt("\nPressione ENTER para continuar...");
-          break;
-        case 6:
-          this.saleRegister.addSale();
-          this.prompt("\nPressione ENTER para continuar...");
-          break;
-        case 7:
-          this.control.db.listAllSales();
-          this.prompt("\nPressione ENTER para continuar...");
-          break;
-        case 8:
-          continues = false;
-          break;
+      //  case 1:
+      //    this.sneakerRegister.addSneaker();
+      //    this.prompt("\nPressione ENTER para continuar...");
+      //    break;
+      //  case 2:
+      //    this.clientRegister.addClient();
+      //    this.prompt("\nPressione ENTER para continuar...\n");
+      //    break;
+      //  case 3:
+      //    this.applyDiscount.applyDiscountToSneaker();
+      //    this.prompt("\nPressione ENTER para continuar...");
+      //    break;
+      //  case 4:
+      //    this.control.db.listAllSneakers();
+      //    this.prompt("\nPressione ENTER para continuar...");
+      //    break;
+      //  case 5:
+      //    this.control.db.listAllClients();
+      //    this.prompt("\nPressione ENTER para continuar...");
+      //    break;
+      //  case 6:
+      //    this.saleRegister.addSale();
+      //    this.prompt("\nPressione ENTER para continuar...");
+      //    break;
+      //  case 7:
+      //    this.control.db.listAllSales();
+      //    this.prompt("\nPressione ENTER para continuar...");
+      //    break;
+      //  case 8:
+      //    continues = false;
+      //    break;
         default:
           console.log("\nDigite um número válido!\n");
           this.prompt("\nPressione ENTER para continuar...");

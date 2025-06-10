@@ -4,6 +4,7 @@ import Sneaker from "./Sneaker";
 import Stock from "./Stock";
 import InvalidAddressException from "../exceptions/InvalidAddressException";
 import OutOfStockException from "../exceptions/OutOfStockException";
+import Seller from "./Seller";
 
 export default class Sale {
   private static nextId: number = 1;
@@ -12,12 +13,14 @@ export default class Sale {
   private client: Client;
   private deliveryAddress: Address;
   private stock: Stock;
+  private seller: Seller;
 
   constructor(
     sneaker: Sneaker,
     client: Client,
     deliveryAddress: Address,
-    stock: Stock
+    stock: Stock,
+    seller: Seller
   ) {
     if (!this.isValidDeliveryAddress(client, deliveryAddress)) {
       throw new InvalidAddressException();
@@ -32,8 +35,11 @@ export default class Sale {
     this.client = client;
     this.deliveryAddress = deliveryAddress;
     this.stock = stock;
+    this.seller = seller;
 
     this.stock.removeStock(1);
+
+    this.seller.addSale(this, sneaker.getPrice());
   }
 
   public getId(): number {
@@ -52,6 +58,10 @@ export default class Sale {
     return this.deliveryAddress;
   }
 
+  public getSeller(): Seller {
+  return this.seller;
+  }
+  
   public setSneaker(sneaker: Sneaker) {
     this.sneaker = sneaker;
   }

@@ -54,9 +54,10 @@ export default class MainController {
     return new Stock(sneaker, quantity);
   }
 
-  public getNewSale(sneakerId: number, clientId: number): Sale | null {
+  public getNewSale(sneakerId: number, clientId: number, sellerId: number): Sale | null {
     const client = this.db.getClientById(clientId);
     const stock = this.db.getStockBySneakerId(sneakerId);
+    const seller = this.db.getSellerById(sellerId);
 
     if (!client) {
       console.log("\nCliente não encontrado.");
@@ -68,9 +69,14 @@ export default class MainController {
       return null;
     }
 
+    if (!seller) {
+    console.log("\nVendedor não encontrado.");
+    return null;
+    }
+
     const sneaker = stock.getSneaker();
     const address = client.getAddresses()[0];
 
-    return new Sale(sneaker, client, address, stock);
+    return new Sale(sneaker, client, address, stock, seller);
   }
 }
