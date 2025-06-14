@@ -26,7 +26,7 @@ describe("Seller class", () => {
        
         client.addAddress(address);
 
-        const sale = new Sale(sneaker, client, address, stock);
+        const sale = new Sale(sneaker, client, address, stock, seller);
 
         seller.addSale(sale, 1000);
 

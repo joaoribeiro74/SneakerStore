@@ -17,7 +17,7 @@ export default class SaleRegister {
     let clientId = this.getInput("Digite o ID do cliente: ");
     let sneakerId = this.getInput("Digite o ID do sneaker: ");
 
-    let sale = this.control.getNewSale(Number(sneakerId), Number(clientId));
+    let sale = this.control.getNewSale(Number(sneakerId), Number(clientId), Number(sneakerId));
 
     if (sale) {
       this.control.db.addNewSale(sale);

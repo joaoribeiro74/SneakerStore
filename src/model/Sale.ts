@@ -38,8 +38,6 @@ export default class Sale {
     this.seller = seller;
 
     this.stock.removeStock(1);
-
-    this.seller.addSale(this, sneaker.getPrice());
   }
 
   public getId(): number {

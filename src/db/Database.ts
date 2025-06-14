@@ -50,16 +50,16 @@ export default class Database {
     return stock || null;
   }
 
-  public listSalesBySeller(sellerId: number): void {
-    const filteredSales = this.sales.filter(sale => sale.getSeller().getId() === sellerId);
-    if (filteredSales.length === 0) {
-      console.log("Nenhuma venda encontrada para este vendedor.");
-      return;
-    }
-    filteredSales.forEach(sale => {
-      console.log(sale.getSummary());
-    });
-  }
+  // public listSalesBySeller(sellerId: number): void {
+  //   const filteredSales = this.sales.filter(sale => sale.getSeller().getId() === sellerId);
+  //   if (filteredSales.length === 0) {
+  //     console.log("Nenhuma venda encontrada para este vendedor.");
+  //     return;
+  //   }
+  //   filteredSales.forEach(sale => {
+  //     console.log(sale.getSummary());
+  //   });
+  // }
 
   public listAllClients(): void {
     console.log("\n--- Lista de Clientes ---\n");

@@ -50,8 +50,7 @@ export default class ClientRegister {
           this.prompt("\nPressione ENTER para continuar...");
           break;
         case 5:
-          // Aqui você deve listar as vendas feitas pelo vendedor
-          this.control.db.listSalesBySeller(/* vendedor atual */);
+          // this.control.db.listSalesBySeller(/* vendedor atual */);
           this.prompt("\nPressione ENTER para continuar...");
           break;
         case 6:
