@@ -1,15 +1,15 @@
+import { getNextId } from "../utils/IdManager";
 import Sale from "./Sale";
 import User from "./User";
 import { UserType } from "./UserType";
 
 export default class Seller extends User {
-  private static nextId: number = 1;
   private sales: Sale[] = [];
   private balance: number = 0;
 
   constructor(name: string, email: string) {
     super(name, email, UserType.seller);
-    this.id = Seller.nextId++;
+    this.id = getNextId("Seller");
   }
 
   public addSale(sale: Sale, value: number): void {

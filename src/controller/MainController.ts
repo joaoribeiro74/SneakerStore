@@ -2,6 +2,7 @@ import Database from "../db/Database";
 import Address from "../model/Address";
 import Client from "../model/Client";
 import Sale from "../model/Sale";
+import Seller from "../model/Seller";
 import Sneaker from "../model/Sneaker";
 import Stock from "../model/Stock";
 import MainScreen from "../view/MainScreen";
@@ -36,6 +37,14 @@ export default class MainController {
     );
     client.addAddress(clientAddress);
     return client;
+  }
+
+  public getNewSeller(
+    name: string,
+    email: string,
+  ): Seller {
+    const seller = new Seller(name, email);
+    return seller;
   }
 
   public getNewSneaker(

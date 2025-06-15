@@ -2,6 +2,7 @@ import PromptSync from "prompt-sync";
 import MainController from "../controller/MainController";
 import Sneaker from "../model/Sneaker";
 import Stock from "../model/Stock";
+import InputUtils from "../utils/InputUtils";
 
 export default class SneakerRegister {
   private prompt = PromptSync();
@@ -14,12 +15,12 @@ export default class SneakerRegister {
   public addSneaker(): void {
     console.log("\n--- Cadastro de Sneakers ---");
 
-    let brand = this.getInput("Marca: ");
-    let model = this.getInput("Modelo: ");
-    let price = parseFloat(this.getValidPriceInput("Preço: "));
-    let colors = this.getInput("Cor(es): ");
-    let gender = this.getInput("Gênero: ");
-    let sizeInput = this.getInput(
+    let brand = InputUtils.getInput("Marca: ");
+    let model = InputUtils.getInput("Modelo: ");
+    let price = parseFloat(InputUtils.getValidPriceInput("Preço: "));
+    let colors = InputUtils.getInput("Cor(es): ");
+    let gender = InputUtils.getInput("Gênero: ");
+    let sizeInput = InputUtils.getInput(
       "Tamanhos disponíveis (separados por vírgula): "
     );
 
@@ -28,10 +29,10 @@ export default class SneakerRegister {
       .map((s) => parseInt(s.trim()))
       .filter((n) => !isNaN(n));
 
-    let releaseDate = this.getValidDateInput(
+    let releaseDate = InputUtils.getValidDateInput(
       "Data de lançamento (dd-mm-yyyy): "
     );
-    let quantity = parseInt(this.getInput("Estoque: "));
+    let quantity = parseInt(InputUtils.getInput("Estoque: "));
 
     let sneaker: Sneaker = this.control.getNewSneaker(
       brand,
@@ -49,46 +50,5 @@ export default class SneakerRegister {
     console.log(
       `\nSneaker ${sneaker.getBrand()} ${sneaker.getModel()} cadastrado com sucesso!`
     );
-  }
-
-  private getInput(promptText: string): string {
-    while (true) {
-      const input = this.prompt(promptText).trim();
-      if (input.length > 0) {
-        return input;
-      }
-      console.log("Este campo é obrigatório.");
-    }
-  }
-
-  private getValidPriceInput(promptText: string): string {
-    const priceRegex = /^\d+([.,]\d{1,2})?$/;
-
-    while (true) {
-      const input = this.prompt(promptText).trim();
-
-      if (priceRegex.test(input)) {
-        return input.replace(",", "."); // normaliza para ponto
-      }
-
-      console.log(
-        "Preço inválido. Use o formato 100 ou 100.99 (máximo 2 casas decimais)."
-      );
-    }
-  }
-
-  private getValidDateInput(promptText: string): string {
-    const dateRegex =
-      /^(0[1-9]|[12][0-9]|3[01])[-](0[1-9]|1[0-2])[-](19|20)\d{2}$/;
-
-    while (true) {
-      const input = this.prompt(promptText).trim();
-
-      if (dateRegex.test(input)) {
-        return input;
-      }
-
-      console.log("Data inválida. Use o formato dd-mm-yyyy (ex: 25-12-2024).");
-    }
   }
 }

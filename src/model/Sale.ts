@@ -5,9 +5,9 @@ import Stock from "./Stock";
 import InvalidAddressException from "../exceptions/InvalidAddressException";
 import OutOfStockException from "../exceptions/OutOfStockException";
 import Seller from "./Seller";
+import { getNextId } from "../utils/IdManager";
 
 export default class Sale {
-  private static nextId: number = 1;
   private id: number = 0;
   private sneaker: Sneaker;
   private client: Client;
@@ -30,7 +30,7 @@ export default class Sale {
       throw new OutOfStockException();
     }
 
-    this.id = Sale.nextId++;
+    this.id = getNextId("Sale");
     this.sneaker = sneaker;
     this.client = client;
     this.deliveryAddress = deliveryAddress;

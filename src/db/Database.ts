@@ -3,6 +3,7 @@ import Sale from "../model/Sale";
 import Seller from "../model/Seller";
 import Sneaker from "../model/Sneaker";
 import Stock from "../model/Stock";
+import PersistenceManager from "../utils/PersistenceManager";
 
 export default class Database {
   private clientDb: Client[] = [];
@@ -11,8 +12,34 @@ export default class Database {
   private saleDb: Sale[] = [];
   private stockDb: Stock[] = [];
 
+  private clientStorage = new PersistenceManager<Client>("clients.json");
+  private sellerStorage = new PersistenceManager<Seller>("sellers.json");
+  private sneakerStorage = new PersistenceManager<Sneaker>("sneakers.json");
+  private saleStorage = new PersistenceManager<Sale>("sales.json");
+  private stockStorage = new PersistenceManager<Stock>("stock.json");
+
+  constructor() {
+    this.clientDb = this.clientStorage.loadData();
+    this.sellerDb = this.sellerStorage.loadData();
+    this.sneakerDb = this.sneakerStorage.loadData();
+    this.saleDb = this.saleStorage.loadData();
+    this.stockDb = this.stockStorage.loadData();
+  }
+
   public addNewClient(client: Client): void {
     this.clientDb.push(client);
+    this.clientStorage.saveData(this.clientDb);
+  }
+
+  public updateClient(updatedClient: Client): void {
+    const index = this.clientDb.findIndex(client => client.getId() === updatedClient.getId());
+
+    if (index === -1) {
+      throw new Error("Client not found");
+    }
+
+    this.clientDb[index] = updatedClient;
+    this.clientStorage.saveData(this.clientDb);
   }
 
   public getClientById(id: number): Client | null {
@@ -21,6 +48,14 @@ export default class Database {
 
   public addNewSeller(seller: Seller): void {
     this.sellerDb.push(seller);
+    this.sellerStorage.saveData(this.sellerDb);
+  }
+
+  public updateSeller(updatedSeller: Seller): void {
+    const index = this.sellerDb.findIndex(seller => seller.getId() === updatedSeller.getId());
+    if (index === -1) throw new Error("Seller not found");
+    this.sellerDb[index] = updatedSeller;
+    this.sellerStorage.saveData(this.sellerDb);
   }
 
   public getSellerById(id: number): Seller | null {
@@ -29,6 +64,7 @@ export default class Database {
 
   public addNewSneaker(sneaker: Sneaker): void {
     this.sneakerDb.push(sneaker);
+    this.sneakerStorage.saveData(this.sneakerDb);
   }
 
   public getSneakerById(id: number): Sneaker | null {
@@ -37,10 +73,12 @@ export default class Database {
 
   public addNewSale(sale: Sale) {
     this.saleDb.push(sale);
+    this.saleStorage.saveData(this.saleDb);
   }
 
   public addNewStock(stock: Stock): void {
     this.stockDb.push(stock);
+    this.stockStorage.saveData(this.stockDb);
   }
 
   public getStockBySneakerId(id: number): Stock | null {
@@ -50,16 +88,17 @@ export default class Database {
     return stock || null;
   }
 
-  // public listSalesBySeller(sellerId: number): void {
-  //   const filteredSales = this.sales.filter(sale => sale.getSeller().getId() === sellerId);
-  //   if (filteredSales.length === 0) {
-  //     console.log("Nenhuma venda encontrada para este vendedor.");
-  //     return;
-  //   }
-  //   filteredSales.forEach(sale => {
-  //     console.log(sale.getSummary());
-  //   });
-  // }
+  public findClientByEmail(email: string): Client | undefined {
+    return this.clientDb.find((client: Client) => client.getEmail() === email);
+  }
+
+  public findSellerByEmail(email: string): Seller | undefined {
+    return this.sellerDb.find((seller: Seller) => seller.getEmail() === email);
+  }
+
+  public findSneakerById(id: number): Sneaker | undefined {
+    return this.sneakerDb.find((sneaker: Sneaker) => sneaker.getId() === id);
+  }
 
   public listAllClients(): void {
     console.log("\n--- Lista de Clientes ---\n");

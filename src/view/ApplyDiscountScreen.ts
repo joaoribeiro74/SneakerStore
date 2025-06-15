@@ -10,7 +10,7 @@ export default class ApplyDiscountScreen {
     this.control = control;
   }
 
-  public applyDiscountToSneaker(): void {
+  public applyDiscount(): void {
     let sneakerId = parseInt(
       this.prompt("Digite o ID do Sneaker para aplicar o desconto: ")
     );

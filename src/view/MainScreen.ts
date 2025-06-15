@@ -4,21 +4,19 @@ import ClientRegister from "./ClientRegister";
 import SneakerRegister from "./SneakerRegister";
 import SaleRegister from "./SaleRegister";
 import ApplyDiscountScreen from "./ApplyDiscountScreen";
+import ClientAccess from "./ClientAccess";
+import SellerAccess from "./SellerAccess";
 
 export default class MainScreen {
   private prompt = promptSync();
   private control: MainController;
-  private clientRegister: ClientRegister;
-  private sneakerRegister: SneakerRegister;
-  private saleRegister: SaleRegister;
-  private applyDiscount: ApplyDiscountScreen;
+  private clientAccess: ClientAccess;
+  private sellerAccess: SellerAccess;
 
   constructor(control: MainController) {
     this.control = control;
-    this.clientRegister = new ClientRegister(control);
-    this.sneakerRegister = new SneakerRegister(control);
-    this.saleRegister = new SaleRegister(control);
-    this.applyDiscount = new ApplyDiscountScreen(control);
+    this.clientAccess = new ClientAccess(control);
+    this.sellerAccess = new SellerAccess(control);
     this.mainMenu();
   }
 
@@ -50,13 +48,14 @@ export default class MainScreen {
 
       switch (choice) {
         case 1:
+          this.sellerAccess.menu();
+          break;
+        case 2:
+          this.clientAccess.menu();
+          break;
       //  case 1:
       //    this.sneakerRegister.addSneaker();
       //    this.prompt("\nPressione ENTER para continuar...");
-      //    break;
-      //  case 2:
-      //    this.clientRegister.addClient();
-      //    this.prompt("\nPressione ENTER para continuar...\n");
       //    break;
       //  case 3:
       //    this.applyDiscount.applyDiscountToSneaker();

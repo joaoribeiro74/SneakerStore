@@ -1,5 +1,6 @@
+import { getNextId } from "../utils/IdManager";
+
 export default class Sneaker {
-  private static nextId: number = 1;
   private id: number = 0;
   private brand: string = "";
   private model: string = "";
@@ -19,7 +20,7 @@ export default class Sneaker {
     sizes: number[],
     releaseDate: string
   ) {
-    this.id = Sneaker.nextId++;
+    this.id = getNextId("Sneaker");
     this.brand = brand;
     this.model = model;
     this.price = price;
