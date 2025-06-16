@@ -117,7 +117,6 @@ export default class ClientScreen {
     } else {
       console.log("\n❌ Erro desconhecido");
     }
-    this.pause();
     }
   }
 

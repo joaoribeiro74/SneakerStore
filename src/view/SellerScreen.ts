@@ -118,7 +118,6 @@ export default class SellerScreen {
     const sales = this.control.getNewSales(client, this.seller, cart);
     sales.forEach(sale => this.control.db.addNewSale(sale));
 
-    // Remove o pedido da base
     this.control.db.removeOrder(selectedOrder.getId());
 
     console.log("\n✅ Pedido finalizado com sucesso!");

@@ -91,10 +91,12 @@ export default class Database {
   }
 
   getMaxSneakerId(): number {
-  if (this.sneakerDb.length === 0) return 0;
-  return this.sneakerDb.reduce((max, snk) => (snk.getId() > max ? snk.getId() : max), 0);
-}
-
+    if (this.sneakerDb.length === 0) return 0;
+    return this.sneakerDb.reduce(
+      (max, snk) => (snk.getId() > max ? snk.getId() : max),
+      0
+    );
+  }
 
   public removeSneakerById(id: number): void {
     this.sneakerDb = this.sneakerDb.filter((sneaker) => sneaker.getId() !== id);
@@ -173,12 +175,12 @@ export default class Database {
     const index = this.orderDb.findIndex((order) => order.getId() === orderId);
 
     if (index === -1) {
-      return false; // Pedido não encontrado
+      return false;
     }
 
     this.orderDb.splice(index, 1);
     this.orderStorage.saveData(this.orderDb);
-    return true; // Pedido removido com sucesso
+    return true;
   }
 
   public findUserByEmail(email: string): User | undefined {
@@ -216,9 +218,7 @@ export default class Database {
   public listSalesBySeller(sellerId: number): void {
     console.log("\n--- Vendas Realizadas por Este Vendedor ---\n");
 
-    const sales = this.saleDb.filter(
-      (sale) => sale.getSellerId() === sellerId
-    );
+    const sales = this.saleDb.filter((sale) => sale.getSellerId() === sellerId);
 
     if (sales.length === 0) {
       console.log("Nenhuma venda encontrada para este vendedor.");

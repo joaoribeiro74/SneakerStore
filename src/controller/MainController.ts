@@ -92,6 +92,7 @@ export default class MainController {
 
       const id = getNextId("Sale");
       const sale = new Sale(id, sneaker, client, client.getAddresses()[0], stock, seller);
+      this.db.updateStock(stock);
       sales.push(sale);
     }
 
