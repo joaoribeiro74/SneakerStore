@@ -45,6 +45,7 @@ export default class SneakerRegister {
     );
     let stock: Stock = this.control.getNewStock(sneaker, quantity);
 
+    this.control.db.addNewSneaker(sneaker);
     this.control.db.addNewStock(stock);
 
     console.log(

@@ -71,11 +71,13 @@ export default class MainController {
     sizes: number[],
     releaseDate: string
   ): Sneaker {
-    return new Sneaker(brand, model, price, colors, gender, sizes, releaseDate);
+
+    const id = getNextId("Sneaker");
+    return new Sneaker(id, brand, model, price, colors, gender, sizes, releaseDate);
   }
 
   public getNewStock(sneaker: Sneaker, quantity: number): Stock {
-    return new Stock(sneaker, quantity);
+    return new Stock(sneaker.getId(), quantity);
   }
 
   public getNewSales(client: Client, seller: Seller, sneakers: Sneaker[]): Sale[] {
@@ -88,7 +90,8 @@ export default class MainController {
         continue;
       }
 
-      const sale = new Sale(sneaker, client, client.getAddresses()[0], stock, seller);
+      const id = getNextId("Sale");
+      const sale = new Sale(id, sneaker, client, client.getAddresses()[0], stock, seller);
       sales.push(sale);
     }
 

@@ -61,6 +61,7 @@ export default class SellerScreen {
           break;
         case 5:
           this.finalizeClientOrder();
+          this.pause();
           break;
         case 6:
           this.seeData();
@@ -99,7 +100,7 @@ export default class SellerScreen {
     console.log("\n--- Pedidos Pendentes ---\n");
     orders.forEach((order: Order, index: number) => {
       console.log(
-        `${index + 1}. Cliente: ${order.getClient().getName()} | Itens: ${order.getItems().length} | Endereço: ${order.getDeliveryAddress().getAddress()}`
+        `${index + 1}. Cliente: ${order.getClient().getName()} | Itens: ${order.getItems().length} | Endereço de Envio: ${order.getDeliveryAddress().getAddress()}, ${order.getDeliveryAddress().getDistrict()}, ${order.getDeliveryAddress().getCity()} - ${order.getDeliveryAddress().getState()}, ${order.getDeliveryAddress().getCountry()}`
       );
     });
 
@@ -121,7 +122,6 @@ export default class SellerScreen {
     this.control.db.removeOrder(selectedOrder.getId());
 
     console.log("\n✅ Pedido finalizado com sucesso!");
-    this.pause();
   }
 
   private seeData(): void {

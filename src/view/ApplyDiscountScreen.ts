@@ -22,6 +22,7 @@ export default class ApplyDiscountScreen {
 
     if (sneaker instanceof Sneaker) {
       sneaker.applyDiscount(discountPercentage);
+      this.control.db.updateSneaker(sneaker);
 
       console.log("\nDesconto aplicado com sucesso!");
     } else {

@@ -15,9 +15,18 @@ export default class Database {
   private stockDb: Stock[] = [];
   private orderDb: Order[] = [];
 
-  private clientStorage = new PersistenceManager<Client>("clients.json", Client);
-  private sellerStorage = new PersistenceManager<Seller>("sellers.json", Seller);
-  private sneakerStorage = new PersistenceManager<Sneaker>("sneakers.json", Sneaker);
+  private clientStorage = new PersistenceManager<Client>(
+    "clients.json",
+    Client
+  );
+  private sellerStorage = new PersistenceManager<Seller>(
+    "sellers.json",
+    Seller
+  );
+  private sneakerStorage = new PersistenceManager<Sneaker>(
+    "sneakers.json",
+    Sneaker
+  );
   private saleStorage = new PersistenceManager<Sale>("sales.json", Sale);
   private stockStorage = new PersistenceManager<Stock>("stock.json", Stock);
   private orderStorage = new PersistenceManager<Order>("orders.json", Order);
@@ -68,9 +77,24 @@ export default class Database {
     this.sneakerStorage.saveData(this.sneakerDb);
   }
 
+  public updateSneaker(updatedSneaker: Sneaker): void {
+    const index = this.sneakerDb.findIndex(
+      (sneaker) => sneaker.getId() === updatedSneaker.getId()
+    );
+    if (index === -1) throw new Error("Sneaker não encontrado");
+    this.sneakerDb[index] = updatedSneaker;
+    this.sneakerStorage.saveData(this.sneakerDb);
+  }
+
   public getSneakerById(id: number): Sneaker | null {
     return this.sneakerDb.find((sneaker) => sneaker.getId() === id) || null;
   }
+
+  getMaxSneakerId(): number {
+  if (this.sneakerDb.length === 0) return 0;
+  return this.sneakerDb.reduce((max, snk) => (snk.getId() > max ? snk.getId() : max), 0);
+}
+
 
   public removeSneakerById(id: number): void {
     this.sneakerDb = this.sneakerDb.filter((sneaker) => sneaker.getId() !== id);
@@ -87,16 +111,34 @@ export default class Database {
     this.stockStorage.saveData(this.stockDb);
   }
 
-  public getStockBySneakerId(id: number): Stock | null {
-    const stock = this.stockDb.find(
-      (stock) => stock.getSneaker().getId() === id
+  public updateStock(updatedStock: Stock): void {
+    const index = this.stockDb.findIndex(
+      (stock) => stock.getSneakerId() === updatedStock.getSneakerId()
     );
-    return stock || null;
+
+    if (index === -1) throw new Error("Estoque não encontrado.");
+
+    this.stockDb[index] = updatedStock;
+    this.stockStorage.saveData(this.stockDb); // salva no JSON
+  }
+
+  public getStockBySneakerId(id: number): Stock | null {
+    const stock =
+      this.stockDb.find((stock) => stock.getSneakerId() === id) || null;
+    if (stock) {
+      const sneaker = this.getSneakerById(id);
+      if (sneaker) {
+        stock.setSneaker(sneaker);
+      } else {
+        console.log(`Tênis com id ${id} não encontrado.`);
+      }
+    }
+    return stock;
   }
 
   public removeStockBySneakerId(sneakerId: number): void {
     this.stockDb = this.stockDb.filter(
-      (stock) => stock.getSneaker().getId() !== sneakerId
+      (stock) => stock.getSneakerId() !== sneakerId
     );
     this.stockStorage.saveData(this.stockDb);
   }
@@ -110,9 +152,26 @@ export default class Database {
     this.orderStorage.saveData(this.orderDb);
   }
 
+  public reorderSneakerAndStockIds(removedId: number): void {
+    this.sneakerDb.forEach((sneaker) => {
+      if (sneaker.getId() > removedId) {
+        sneaker.setId(sneaker.getId() - 1);
+      }
+    });
+
+    this.stockDb.forEach((stock) => {
+      if (stock.getSneakerId() > removedId) {
+        stock["sneakerId"] = stock.getSneakerId() - 1;
+      }
+    });
+
+    this.sneakerStorage.saveData(this.sneakerDb);
+    this.stockStorage.saveData(this.stockDb);
+  }
+
   public removeOrder(orderId: number): boolean {
-    const index = this.orderDb.findIndex(order => order.getId() === orderId);
-    
+    const index = this.orderDb.findIndex((order) => order.getId() === orderId);
+
     if (index === -1) {
       return false; // Pedido não encontrado
     }
@@ -141,7 +200,7 @@ export default class Database {
   public findSneakerById(id: number): Sneaker | undefined {
     return this.sneakerDb.find((sneaker: Sneaker) => sneaker.getId() === id);
   }
-  
+
   public listAllSneakers(): void {
     console.log("--- Lista de Sneakers ---\n");
 
@@ -158,7 +217,7 @@ export default class Database {
     console.log("\n--- Vendas Realizadas por Este Vendedor ---\n");
 
     const sales = this.saleDb.filter(
-      (sale) => sale.getSeller().getId() === sellerId
+      (sale) => sale.getSellerId() === sellerId
     );
 
     if (sales.length === 0) {

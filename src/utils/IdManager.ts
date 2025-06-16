@@ -42,3 +42,8 @@ export function resetId(entityName: string) {
   idStore[entityName] = 1;
   save();
 }
+
+export function updateIdStoreWithMaxId(entityName: string, maxId: number) {
+  idStore[entityName] = maxId;
+  save();
+}

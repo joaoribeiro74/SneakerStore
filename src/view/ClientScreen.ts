@@ -5,6 +5,8 @@ import Address from "../model/Address";
 import InputUtils from "../utils/InputUtils";
 import { getNextId } from "../utils/IdManager";
 import Order from "../model/Order";
+import InvalidAddressException from "../exceptions/InvalidAddressException";
+import OutOfStockException from "../exceptions/OutOfStockException";
 export default class ClientScreen {
   private prompt = promptSync();
   private control: MainController;
@@ -19,7 +21,7 @@ export default class ClientScreen {
     let continues: boolean = true;
     while (continues) {
       console.clear();
-      console.log("\n--- Menu de Vendedor ---\n");
+      console.log("--- Menu de Cliente ---\n");
       let choice = parseInt(
         this.prompt(
           `Bem-Vindo, ${this.client.getName()}!\n` +
@@ -38,24 +40,31 @@ export default class ClientScreen {
       switch (choice) {
         case 1:
           this.control.db.listAllSneakers();
+          this.pause();
           break;
         case 2:
           this.addToCart();
+          this.pause();
           break;
         case 3:
           this.viewCart();
+          this.pause();
           break;
         case 4:
           this.finishOrder();
+          this.pause();
           break;
         case 5:
           this.addAddress();
+          this.pause();
           break;
         case 6:
           this.seeData();
+          this.pause();
           break;
         case 7:
           this.editData();
+          this.pause();
           break;
         case 8:
           continues = false;
@@ -74,33 +83,54 @@ export default class ClientScreen {
   }
 
   private addToCart(): void {
-    const id = Number(
-      this.prompt("Digite o ID do tênis que deseja adicionar ao carrinho: ")
-    );
-    if (isNaN(id)) {
-      console.log("\n❌ Entrada inválida. Digite um número.");
-      this.pause();
-      return;
+  const id = Number(this.prompt("Digite o ID do tênis que deseja adicionar ao carrinho: "));
+  if (isNaN(id)) {
+    console.log("\n❌ Entrada inválida. Digite um número.");
+    this.pause();
+    return;
+  }
+
+  const sneaker = this.control.db.findSneakerById(id);
+  if (!sneaker) {
+    console.log("\n❌ Tênis não encontrado com o ID informado.");
+    this.pause();
+    return;
+  }
+
+  const availableSizes = sneaker.getSizes(); // supondo que esse método existe e retorna number[]
+  try {
+    if (!availableSizes || availableSizes.length === 0) {
+      throw new OutOfStockException("Nenhum tamanho disponível para este modelo.");
     }
-    const sneaker = this.control.db.findSneakerById(id);
-    if (sneaker) {
-      this.client.getCart().push(sneaker);
-      console.log("\n✅ Tênis adicionado ao carrinho com sucesso!");
+
+    console.log("\n📏 Tamanhos disponíveis: " + availableSizes.join(", "));
+    const size = Number(this.prompt("Digite o tamanho desejado: "));
+    if (!availableSizes.includes(size)) {
+      throw new OutOfStockException();
+    }
+
+    this.client.getCart().push({ sneaker, size });
+    console.log(`\n✅ Tênis adicionado ao carrinho no tamanho ${size}!`);
+  } catch (error) {
+      if (error instanceof Error) {
+      console.log("\n❌ " + error.message);
     } else {
-      console.log("\n❌ Tênis não encontrado com o ID informado.");
+      console.log("\n❌ Erro desconhecido");
     }
     this.pause();
+    }
   }
 
   private viewCart(): void {
     const cart = this.client.getCart();
-    console.log("\n--- Carrinho ---\n");
+    console.log("--- Carrinho ---\n");
     if (cart.length === 0) {
       console.log("Carrinho vazio.");
     } else {
-      cart.forEach((s) => console.log(s.getInfo()));
+      cart.forEach((item, i) => {
+        console.log(`${i + 1}. ${item.sneaker.getInfo()} | Tamanho Escolhido: ${item.size}`);
+      });
     }
-    this.pause();
   }
 
   private finishOrder(): void {
@@ -132,25 +162,35 @@ export default class ClientScreen {
     const choice = Number(
       this.prompt("\nDigite o número do endereço desejado: ")
     );
-    if (isNaN(choice) || choice < 1 || choice > addresses.length) {
-      console.log("\n❌ Opção inválida.");
-      this.pause();
-      return;
+    try {
+      if (isNaN(choice) || choice < 1 || choice > addresses.length) {
+        throw new InvalidAddressException();
+      }
+    } catch (error) {
+        if (error instanceof Error) {
+        console.log("\n❌ " + error.message);
+      } else {
+        console.log("\n❌ Erro desconhecido");
+      }
+    this.pause();
+    return;
     }
-
+    
     const selectedAddress = addresses[choice - 1];
 
+    console.clear();
     console.log("\n--- Itens do seu pedido ---\n");
-    cart.forEach((s, i) => console.log(`${i + 1}. ${s.getInfo()}`));
+    cart.forEach((item, i) => {
+      console.log(`${i + 1}. ${item.sneaker.getInfo()} | Tamanho: ${item.size}`);
+    });
 
     console.log(
       `\nPedido será enviado para: ${selectedAddress.getAddress()}, ${selectedAddress.getDistrict()}, ${selectedAddress.getCity()} - ${selectedAddress.getState()}, ${selectedAddress.getCountry()}`
     );
 
     const orderId = getNextId("Order");
-    const order = new Order(
-      orderId, this.client, [...cart], selectedAddress
-    );
+    const sneakersOnly = cart.map((item) => item.sneaker);
+    const order = new Order(orderId, this.client, sneakersOnly, selectedAddress);
     this.control.db.addOrder(order);
 
     cart.length = 0;
@@ -159,8 +199,6 @@ export default class ClientScreen {
     console.log(
       "\n✅ Pedido enviado! Aguarde um vendedor processar sua compra."
     );
-
-    this.pause();
   }
 
   private addAddress(): void {
@@ -172,7 +210,7 @@ export default class ClientScreen {
     const country = InputUtils.getInput("País: ");
     const district = InputUtils.getInput("Bairro: ");
     const address = InputUtils.getInput("Endereço: ");
-    const reference = InputUtils.getInput("Referência: ");
+    const reference = InputUtils.getOptionalInput("Referência: ");
 
     const newAddress = new Address(
       cep,
@@ -181,19 +219,17 @@ export default class ClientScreen {
       country,
       district,
       address,
-      reference
+      reference!
     );
     this.client.getAddresses().push(newAddress);
     this.control.db.updateClient(this.client);
 
     console.log("\n✅ Endereço adicionado com sucesso!");
-    this.pause();
   }
 
   private seeData(): void {
     console.log("--- Seus Dados ---\n");
     console.log(this.client.displayInfo());
-    this.pause();
   }
 
   private editData(): void {
@@ -222,11 +258,17 @@ export default class ClientScreen {
     });
 
     const option = Number(
-      this.prompt("\nDigite o número do endereço que deseja editar: ")
+      this.prompt("\nDigite o número do endereço que deseja editar (ou 0 para não editar): ")
     );
-    if (isNaN(option) || option < 1 || option > addresses.length) {
+    if (isNaN(option) || option < 0 || option > addresses.length) {
       console.log("\n❌ Opção inválida.");
       this.pause();
+      return;
+    }
+
+    if (option === 0) {
+      console.log("\nEndereços mantidos sem alterações.");
+      this.control.db.updateClient(this.client);
       return;
     }
 

@@ -1,7 +1,7 @@
 import { getNextId } from "../utils/IdManager";
 
 export default class Sneaker {
-  private id: number = 0;
+  private id: number;
   private brand: string = "";
   private model: string = "";
   private price: number = 0;
@@ -10,17 +10,19 @@ export default class Sneaker {
   private sizes: number[];
   private releaseDate: string;
   private discountPercentage: number = 0;
+  private originalPrice: number;
 
   constructor(
+    id: number,
     brand: string,
     model: string,
     price: number,
     colors: string,
     gender: string,
     sizes: number[],
-    releaseDate: string
+    releaseDate: string,
   ) {
-    this.id = getNextId("Sneaker");
+    this.id = id;
     this.brand = brand;
     this.model = model;
     this.price = price;
@@ -28,6 +30,7 @@ export default class Sneaker {
     this.gender = gender;
     this.sizes = sizes;
     this.releaseDate = releaseDate;
+    this.originalPrice = price;
   }
 
   public getId(): number {
@@ -43,7 +46,7 @@ export default class Sneaker {
   }
 
   public getPrice(): number {
-    return this.price;
+    return this.originalPrice;
   }
 
   public setBrand(brand: string): void {
@@ -74,6 +77,10 @@ export default class Sneaker {
     return this.releaseDate;
   }
 
+  public setId(id: number): void {
+    this.id = id;
+  }
+
   public setColors(colors: string): void {
     this.colors = colors;
   }
@@ -90,17 +97,20 @@ export default class Sneaker {
     this.releaseDate = releaseDate;
   }
 
-  public applyDiscount(discount: number): void {
-    this.discountPercentage = discount;
+  public getDiscountPercentage(): number {
+    return this.discountPercentage;
   }
 
   public getDiscountPrice(): number {
-    let originalPrice = this.getPrice();
-    if (this.discountPercentage > 0) {
-      let discountAmount = (this.discountPercentage / 100) * originalPrice;
-      return originalPrice - discountAmount;
+    const discountAmount = (this.discountPercentage / 100) * this.originalPrice;
+    return parseFloat((this.originalPrice - discountAmount).toFixed(2));
+  }
+
+  public applyDiscount(percentage: number): void {
+    if (percentage < 0 || percentage > 100) {
+      throw new Error("Desconto deve estar entre 0% e 100%.");
     }
-    return originalPrice;
+    this.discountPercentage = percentage;
   }
 
   public getInfo(): string {
@@ -108,17 +118,14 @@ export default class Sneaker {
     if (this.discountPercentage > 0) {
       sneaker += ` | Desconto: ${
         this.discountPercentage
-      }% | Preço com Desconto: ${this.getPrice().toFixed(2)}`;
+      }% | Preço com Desconto: ${this.getDiscountPrice().toFixed(2)}`;
     }
     return sneaker;
   }
 
-  public setId(id: number): void {
-    this.id = id;
-  }
-
   static fromJSON(json: any): Sneaker {
     const sneaker = new Sneaker(
+      json.id,
       json.brand,
       json.model,
       json.price,
@@ -127,10 +134,7 @@ export default class Sneaker {
       json.sizes,
       json.releaseDate
     );
-    sneaker.setId(json.id);
-    if (json.discountPercentage) {
-      sneaker.applyDiscount(json.discountPercentage);
-    }
+    sneaker.discountPercentage = json.discountPercentage || 0;
     return sneaker;
   }
 }

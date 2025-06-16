@@ -1,5 +1,6 @@
 import { getNextId } from "../utils/IdManager";
 import Address from "./Address";
+import { CartItem } from "./CartItem";
 import Sale from "./Sale";
 import Sneaker from "./Sneaker";
 import User from "./User";
@@ -8,7 +9,7 @@ import { UserType } from "./UserType";
 export default class Client extends User {
   private addresses: Address[] = [];
   private purchaseHistory: Sale[] = [];
-  private cart: Sneaker[] = [];
+  private cart: CartItem[] = [];
 
   constructor(id: number, name: string, email: string) {
     super(id, name, email, UserType.client);
@@ -30,11 +31,11 @@ export default class Client extends User {
     return this.purchaseHistory;
   }
 
-  public addToCart(sneaker: Sneaker): void {
-    this.cart.push(sneaker);
+  public addToCart(item: CartItem): void {
+    this.cart.push(item);
   }
 
-  public getCart(): Sneaker[] {
+  public getCart(): CartItem[] {
     return this.cart;
   }
 

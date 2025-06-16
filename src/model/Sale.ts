@@ -8,14 +8,15 @@ import Seller from "./Seller";
 import { getNextId } from "../utils/IdManager";
 
 export default class Sale {
-  private id: number = 0;
+  private id: number;
   private sneaker: Sneaker;
   private client: Client;
   private deliveryAddress: Address;
   private stock: Stock;
-  private seller: Seller;
+  private sellerId: number;
 
   constructor(
+    id: number,
     sneaker: Sneaker,
     client: Client,
     deliveryAddress: Address,
@@ -30,14 +31,15 @@ export default class Sale {
       throw new OutOfStockException();
     }
 
-    this.id = getNextId("Sale");
+    this.id = id;
     this.sneaker = sneaker;
     this.client = client;
     this.deliveryAddress = deliveryAddress;
     this.stock = stock;
-    this.seller = seller;
+    this.sellerId = seller.getId();
 
     this.stock.removeStock(1);
+    seller.addSale(this, this.sneaker.getPrice());
   }
 
   public getId(): number {
@@ -56,8 +58,8 @@ export default class Sale {
     return this.deliveryAddress;
   }
 
-  public getSeller(): Seller {
-  return this.seller;
+  public getSellerId(): number {
+    return this.sellerId;
   }
   
   public setSneaker(sneaker: Sneaker) {
@@ -91,7 +93,6 @@ export default class Sale {
     const client = Client.fromJSON(json.client);
     const address = Address.fromJSON(json.deliveryAddress);
     const stock = Stock.fromJSON(json.stock);
-    const seller = Seller.fromJSON(json.seller);
 
     const sale = Object.create(Sale.prototype) as Sale;
 
@@ -100,7 +101,7 @@ export default class Sale {
     sale.client = client;
     sale.deliveryAddress = address;
     sale.stock = stock;
-    sale.seller = seller;
+    sale.sellerId = json.sellerId;
 
     return sale;
   }

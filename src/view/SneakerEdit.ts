@@ -3,6 +3,7 @@ import MainController from "../controller/MainController";
 import Stock from "../model/Stock";
 import InputUtils from "../utils/InputUtils";
 import Sneaker from "../model/Sneaker";
+import { updateIdStoreWithMaxId } from "../utils/IdManager";
 export default class SneakerEdit {
   private prompt = promptSync();
   private control: MainController;
@@ -25,6 +26,7 @@ export default class SneakerEdit {
             " 4. Voltar\n> "
         )
       );
+      console.clear();
 
       switch (choice) {
         case 1:
@@ -59,106 +61,119 @@ export default class SneakerEdit {
     const id = parseInt(this.prompt("Digite o ID do tênis: "));
     const sneaker = this.control.db.getSneakerById(id);
     if (!sneaker) {
-      console.log("Tênis não encontrado.");
+      console.log("\nTênis não encontrado.");
       return null;
     }
     return sneaker;
   }
 
   private editSneakerInfo(): void {
-    const sneaker = this.getSneakerById();
-    if (!sneaker) return;
+  const sneaker = this.getSneakerById();
+  if (!sneaker) return;
 
-    console.log(
-      `\nEditando: ${sneaker.getBrand()} ${sneaker.getModel()} (deixe vazio para manter o valor atual)`
-    );
+  console.log(
+    `\nEditando: ${sneaker.getBrand()} ${sneaker.getModel()} (deixe vazio para manter o valor atual)`
+  );
 
-    const brand = InputUtils.getInput(`Nova marca [${sneaker.getBrand()}]: `);
-    if (brand.trim()) sneaker.setBrand(brand);
+  const brand = this.prompt(`Nova marca (${sneaker.getBrand()}): `);
+  const model = this.prompt(`Novo modelo (${sneaker.getModel()}): `);
+  const priceInput = this.prompt(`Novo preço (${sneaker.getPrice().toFixed(2)}): `);
+  const colors = this.prompt(`Novas cores (${sneaker.getColors()}): `);
+  const gender = this.prompt(`Novo gênero (${sneaker.getGender()}): `);
+  const sizeInput = this.prompt(
+    `Novos tamanhos (ex: 38,39,40) (${sneaker.getSizes().join(",")}): `
+  );
+  const dateInput = this.prompt(`Nova data de lançamento (dd-mm-yyyy) (${sneaker.getReleaseDate()}): `);
 
-    const model = InputUtils.getInput(`Novo modelo [${sneaker.getModel()}]: `);
-    if (model.trim()) sneaker.setModel(model);
+  let isValid = true;
 
-    const priceInput = InputUtils.getInput(
-      `Novo preço [${sneaker.getPrice().toFixed(2)}]: `
-    );
-    if (priceInput.trim()) sneaker.setPrice(parseFloat(priceInput));
-
-    const colors = InputUtils.getInput(
-      `Novas cores [${sneaker.getColors()}]: `
-    );
-    if (colors.trim()) sneaker.setColors(colors);
-
-    const gender = InputUtils.getInput(
-      `Novo gênero [${sneaker.getGender()}]: `
-    );
-    if (gender.trim()) sneaker.setGender(gender);
-
-    const sizeInput = InputUtils.getInput(
-      `Novos tamanhos (ex: 38,39,40) [${sneaker.getSizes().join(",")}]: `
-    );
-    if (sizeInput.trim()) {
-      const sizes = sizeInput
-        .split(",")
-        .map((s) => parseInt(s.trim()))
-        .filter((n) => !isNaN(n));
-      sneaker.setSizes(sizes);
-    }
-
-    const dateInput = InputUtils.getInput(
-      `Nova data de lançamento (dd-mm-yyyy) [${sneaker.getReleaseDate()}]: `
-    );
-    if (dateInput.trim()) {
-      const newDate = InputUtils.getValidDateInput(dateInput);
-      if (newDate) sneaker.setReleaseDate(newDate);
-    }
-
-    console.log("Informações atualizadas com sucesso!");
+  if (brand) sneaker.setBrand(brand);
+  if (model) sneaker.setModel(model);
+  if (priceInput) {
+    const priceRegex = /^\d+([.,]\d{1,2})?$/;
+      if (priceRegex.test(priceInput)) {
+        const parsed = parseFloat(priceInput.replace(",", "."));
+        sneaker.setPrice(parsed);
+      } else {
+        console.log("\n❌ Preço inválido. Use um número válido (ex: 199.99)");
+        isValid = false;
+      }
   }
+  if (colors) sneaker.setColors(colors);
+  if (gender) sneaker.setGender(gender);
+  if (sizeInput) {
+    const sizes = sizeInput
+      .split(/[\s,]+/)
+      .map((s) => parseInt(s.trim()))
+      .filter((n) => !isNaN(n));
+    if (sizes.length > 0) {
+      sneaker.setSizes(sizes);
+    } else {
+      console.log("\n❌ Tamanhos inválidos. Use vírgulas ou espaço entre os números (ex: 38,39,40)");
+      isValid = false;
+    }
+  }
+  if (dateInput) {
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])[-](0[1-9]|1[0-2])[-](19|20)\d{2}$/;
+    if (dateRegex.test(dateInput)) {
+      sneaker.setReleaseDate(dateInput);
+    } else {
+      console.log("\n❌ Data inválida. Use o formato dd-mm-yyyy (ex: 25-12-2024)");
+      isValid = false;
+    }
+  }
+
+  if (!isValid) {
+    console.log("\n⚠️ Nenhuma alteração foi salva devido aos erros acima.");
+    return;
+  }
+
+  this.control.db.updateSneaker(sneaker);
+  console.log("\n✅ Informações do tênis atualizadas com sucesso!");
+}
 
   private increaseStock(): void {
-    const sneaker = this.getSneakerById();
-    if (!sneaker) return;
+  const sneaker = this.getSneakerById();
+  if (!sneaker) return;
 
-    const stock = this.control.db.getStockBySneakerId(sneaker.getId());
-    if (!stock) {
-      console.log("Este tênis não possui estoque registrado ainda.");
-      const qtd = parseInt(
-        this.prompt("Deseja adicionar estoque inicial? Quantidade: ")
-      );
-      if (!isNaN(qtd) && qtd > 0) {
-        const newStock = new Stock(sneaker, qtd);
-        this.control.db.addNewStock(newStock); // ou equivalente
-        console.log("Estoque inicial adicionado com sucesso.");
-      } else {
-        console.log("Quantidade inválida. Operação cancelada.");
-      }
-      return;
-    }
-
-    const qtd = parseInt(this.prompt("Quantidade a adicionar no estoque: "));
-    if (!isNaN(qtd) && qtd > 0) {
-      const novaQuantidade = stock.getQuantity() + qtd;
-      stock.updateQuantity(novaQuantidade);
-      console.log("Estoque aumentado com sucesso.");
-    } else {
-      console.log("Quantidade inválida.");
-    }
+  const stock = this.control.db.getStockBySneakerId(sneaker.getId());
+  if (!stock) {
+    console.log("\nErro: estoque não encontrado para este tênis.");
+    return;
   }
+
+  const qtd = parseInt(this.prompt("Quantidade a adicionar no estoque: "));
+  if (!isNaN(qtd) && qtd > 0) {
+    const novaQuantidade = stock.getQuantity() + qtd;
+    stock.updateQuantity(novaQuantidade);
+
+    this.control.db.updateStock(stock);
+
+    console.log("\nEstoque aumentado com sucesso.");
+  } else {
+    console.log("\nQuantidade inválida.");
+  }
+}
+
 
   private deleteSneaker(): void {
     const sneaker = this.getSneakerById();
     if (!sneaker) return;
 
     const confirm = this.prompt(
-      `Tem certeza que deseja excluir o tênis "${sneaker.getBrand()} ${sneaker.getModel()}"? (s/n): `
+      `\nTem certeza que deseja excluir o tênis "${sneaker.getBrand()} ${sneaker.getModel()}"? (s/n): `
     ).toLowerCase();
     if (confirm === "s") {
-      this.control.db.removeSneakerById(sneaker.getId());
-      this.control.db.removeStockBySneakerId(sneaker.getId());
-      console.log("Tênis excluído com sucesso.");
+      const id = sneaker.getId();
+      this.control.db.removeSneakerById(id);
+      this.control.db.removeStockBySneakerId(id);
+      this.control.db.reorderSneakerAndStockIds(id);
+
+      const maxId = this.control.db.getMaxSneakerId(); // você precisa implementar essa função que retorna o maior ID atual.
+      updateIdStoreWithMaxId("Sneaker", maxId);
+      console.log("\nTênis excluído com sucesso.");
     } else {
-      console.log("Exclusão cancelada.");
+      console.log("\nExclusão cancelada.");
     }
   }
 }

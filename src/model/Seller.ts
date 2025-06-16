@@ -28,6 +28,10 @@ export default class Seller extends User {
     return `ID: ${this.getId()} | Vendedor: ${this.getName()} | Email: ${this.getEmail()}`;
   }
 
+  public displaySales(): string {
+    return `ID: ${this.getId()} | Vendedor: ${this.getName()} | Balanço: R$ ${this.getBalance()} | Vendas: ${this.sales.length}`;
+  }
+
   static fromJSON(json: any): Seller {
     const seller = new Seller(json.id, json.name, json.email);
     seller.id = json.id;

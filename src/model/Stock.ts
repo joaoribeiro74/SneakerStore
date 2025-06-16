@@ -1,16 +1,28 @@
 import Sneaker from "./Sneaker";
 
 export default class Stock {
-  private sneaker: Sneaker;
+  private sneakerId: number;
+  private sneaker?: Sneaker;
   private quantity: number;
 
-  constructor(sneaker: Sneaker, quantity: number) {
-    this.sneaker = sneaker;
+  constructor(sneakerId: number, quantity: number) {
+    this.sneakerId = sneakerId;
     this.quantity = quantity;
   }
 
+  public setSneaker(sneaker: Sneaker) {
+    this.sneaker = sneaker;
+  }
+
   public getSneaker(): Sneaker {
+    if (!this.sneaker) {
+      throw new Error("Sneaker não carregado. Use setSneaker ou carregue do banco.");
+    }
     return this.sneaker;
+  }
+
+  public getSneakerId(): number {
+    return this.sneakerId;
   }
 
   public getQuantity(): number {
@@ -38,8 +50,18 @@ export default class Stock {
     return this.quantity >= amount;
   }
 
-  static fromJSON(json: any): Stock {
-    const sneaker = Sneaker.fromJSON(json.sneaker);
-    return new Stock(sneaker, json.quantity);
+  public toJSON() {
+    return {
+      sneakerId: this.sneakerId,
+      quantity: this.quantity,
+    };
+  }
+
+  static fromJSON(json: any, sneaker?: Sneaker): Stock {
+    const stock = new Stock(json.sneakerId, json.quantity);
+    if (sneaker) {
+      stock.setSneaker(sneaker);
+    }
+    return stock;
   }
 }
