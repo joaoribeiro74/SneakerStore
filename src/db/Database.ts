@@ -5,6 +5,7 @@ import Sneaker from "../model/Sneaker";
 import Stock from "../model/Stock";
 import Order from "../model/Order";
 import PersistenceManager from "../utils/PersistenceManager";
+import User from "../model/User";
 
 export default class Database {
   private clientDb: Client[] = [];
@@ -14,12 +15,12 @@ export default class Database {
   private stockDb: Stock[] = [];
   private orderDb: Order[] = [];
 
-  private clientStorage = new PersistenceManager<Client>("clients.json");
-  private sellerStorage = new PersistenceManager<Seller>("sellers.json");
-  private sneakerStorage = new PersistenceManager<Sneaker>("sneakers.json");
-  private saleStorage = new PersistenceManager<Sale>("sales.json");
-  private stockStorage = new PersistenceManager<Stock>("stock.json");
-  private orderStorage = new PersistenceManager<Order>("orders.json");
+  private clientStorage = new PersistenceManager<Client>("clients.json", Client);
+  private sellerStorage = new PersistenceManager<Seller>("sellers.json", Seller);
+  private sneakerStorage = new PersistenceManager<Sneaker>("sneakers.json", Sneaker);
+  private saleStorage = new PersistenceManager<Sale>("sales.json", Sale);
+  private stockStorage = new PersistenceManager<Stock>("stock.json", Stock);
+  private orderStorage = new PersistenceManager<Order>("orders.json", Order);
 
   constructor() {
     this.clientDb = this.clientStorage.loadData();
@@ -31,12 +32,6 @@ export default class Database {
   }
 
   public addNewClient(client: Client): void {
-    const existingClient = this.findClientByEmail(client.getEmail());
-
-    if (existingClient) {
-      console.log("Já existe um cliente cadastrado com este e-mail.");
-    }
-
     this.clientDb.push(client);
     this.clientStorage.saveData(this.clientDb);
   }
@@ -47,24 +42,14 @@ export default class Database {
     );
 
     if (index === -1) {
-      throw new Error("Client not found");
+      throw new Error("Cliente não encontrado.");
     }
 
     this.clientDb[index] = updatedClient;
     this.clientStorage.saveData(this.clientDb);
   }
 
-  public getClientById(id: number): Client | null {
-    return this.clientDb.find((client) => client.getId() === id) || null;
-  }
-
   public addNewSeller(seller: Seller): void {
-    const existingSeller = this.findSellerByEmail(seller.getEmail());
-
-    if (existingSeller) {
-      throw new Error("\nJá existe um vendedor com este e-mail. Tente Novamente.");
-    }
-
     this.sellerDb.push(seller);
     this.sellerStorage.saveData(this.sellerDb);
   }
@@ -76,10 +61,6 @@ export default class Database {
     if (index === -1) throw new Error("Vendedor não encontrado");
     this.sellerDb[index] = updatedSeller;
     this.sellerStorage.saveData(this.sellerDb);
-  }
-
-  public getSellerById(id: number): Seller | null {
-    return this.sellerDb.find((seller) => seller.getId() === id) || null;
   }
 
   public addNewSneaker(sneaker: Sneaker): void {
@@ -141,55 +122,31 @@ export default class Database {
     return true; // Pedido removido com sucesso
   }
 
-  public findClientByEmail(email: string): Client | undefined {
-    return this.clientDb.find((client: Client) => client.getEmail() === email);
-  }
+  public findUserByEmail(email: string): User | undefined {
+    const lowerEmail = email.toLowerCase();
 
-  public findSellerByEmail(email: string): Seller | undefined {
-    return this.sellerDb.find((seller: Seller) => seller.getEmail() === email);
+    const client = this.clientDb.find(
+      (c: Client) => c.getEmail().toLowerCase() === lowerEmail
+    );
+
+    if (client) return client;
+
+    const seller = this.sellerDb.find(
+      (s: Seller) => s.getEmail().toLowerCase() === lowerEmail
+    );
+
+    return seller;
   }
 
   public findSneakerById(id: number): Sneaker | undefined {
     return this.sneakerDb.find((sneaker: Sneaker) => sneaker.getId() === id);
   }
-
-  public listAllClients(): void {
-    console.log("\n--- Lista de Clientes ---\n");
-
-    if (this.clientDb.length === 0) {
-      console.log("Nenhum cliente cadastrado.\n");
-      return;
-    }
-
-    for (const client of this.clientDb) {
-      const address = client.getAddresses()[0];
-
-      console.log(
-        `ID do Cliente: ${client.getId()} | Nome: ${client.getName()} | Email: ${client.getEmail()} | Endereço: ${address.getAddress()}, ${address.getDistrict()}, ${address.getCity()} - ${address.getState()}, ${address.getCountry()}`
-      );
-    }
-  }
-
-  public listAllSellers(): void {
-    console.log("\n--- Lista de Vendedores ---\n");
-
-    if (this.sellerDb.length === 0) {
-      console.log("Nenhum vendedor cadastrado.\n");
-      return;
-    }
-
-    for (const seller of this.sellerDb) {
-      console.log(
-        `ID do Vendedor: ${seller.getId()} | Nome: ${seller.getName()} | Email: ${seller.getEmail()} | Balanço: ${seller.getBalance()} | Vendas: ${seller.getSales()}`
-      );
-    }
-  }
-
+  
   public listAllSneakers(): void {
-    console.log("\n--- Lista de Sneakers ---\n");
+    console.log("--- Lista de Sneakers ---\n");
 
     if (this.sneakerDb.length === 0) {
-      console.log("Nenhum sneaker cadastrado.\n");
+      console.log("Nenhum sneaker cadastrado.");
       return;
     }
 
@@ -197,26 +154,6 @@ export default class Database {
       console.log(sneaker.getInfo());
     }
   }
-
-  public listAllSales(): void {
-    console.log("\n--- Histórico de Vendas ---\n");
-
-    if (this.saleDb.length === 0) {
-      console.log("Nenhuma venda foi feita.");
-      return;
-    }
-
-    for (const sale of this.saleDb) {
-      console.log(
-        `ID da Venda: ${sale.getId()} | Nome do Comprador: ${sale
-          .getClient()
-          .getName()} | Sneaker Vendido: ${sale.getSneaker().getBrand()} ${sale
-          .getSneaker()
-          .getModel()} | Enviar para: ${sale.getDeliveryAddressFormatted()}`
-      );
-    }
-  }
-
   public listSalesBySeller(sellerId: number): void {
     console.log("\n--- Vendas Realizadas por Este Vendedor ---\n");
 

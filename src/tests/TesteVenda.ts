@@ -8,13 +8,13 @@ import InvalidAddressException from "../exceptions/InvalidAddressException";
 import OutOfStockException from "../exceptions/OutOfStockException";
 import Seller from "../model/Seller";
 
-const client = new Client("Carlos", "carlos@email.com");
+const client = new Client(2, "Carlos", "carlos@email.com");
 const address = new Address("00000-000", "Cidade", "UF", "Brasil", "Bairro", "Rua A, 123", "Referência");
 
 const sneaker = new Sneaker("Nike", "Air Jordan 4", 1599, "Branco e Azul", "Masculino", [40], "24-03-2025");
 const stock = new Stock(sneaker, 5);
 
-const seller = new Seller("Fernanda", "fernanda@email.com");
+const seller = new Seller(1, "Fernanda", "fernanda@email.com");
 console.log("🔍 Vendedor criado:", seller.displayInfo());
 
 client.addAddress(address);

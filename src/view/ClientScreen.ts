@@ -18,6 +18,8 @@ export default class ClientScreen {
   public show(): void {
     let continues: boolean = true;
     while (continues) {
+      console.clear();
+      console.log("\n--- Menu de Vendedor ---\n");
       let choice = parseInt(
         this.prompt(
           `Bem-Vindo, ${this.client.getName()}!\n` +
@@ -26,10 +28,12 @@ export default class ClientScreen {
             " 3. Ver Carrinho\n" +
             " 4. Finalizar Pedido\n" +
             ` 5. Adicionar novo endereço\n` +
-            " 6. Editar Dados\n" +
-            " 7. Sair\n> "
+            " 6. Ver Dados\n" +
+            " 7. Editar Dados\n" +
+            " 8. Sair\n> "
         )
       );
+      console.clear();
 
       switch (choice) {
         case 1:
@@ -48,9 +52,12 @@ export default class ClientScreen {
           this.addAddress();
           break;
         case 6:
-          this.editData();
+          this.seeData();
           break;
         case 7:
+          this.editData();
+          break;
+        case 8:
           continues = false;
           break;
         default:
@@ -183,8 +190,14 @@ export default class ClientScreen {
     this.pause();
   }
 
+  private seeData(): void {
+    console.log("--- Seus Dados ---\n");
+    console.log(this.client.displayInfo());
+    this.pause();
+  }
+
   private editData(): void {
-    console.log("\n--- Editar Dados ---\n");
+    console.log("--- Editar Dados ---\n");
 
     const newName = this.prompt("Novo nome (deixe vazio para manter): ");
     const newEmail = this.prompt("Novo email (deixe vazio para manter): ");

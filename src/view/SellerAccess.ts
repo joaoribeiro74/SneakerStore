@@ -2,6 +2,7 @@ import promptSync from 'prompt-sync';
 import MainController from '../controller/MainController';
 import SellerScreen from './SellerScreen';
 import SellerRegister from './SellerRegister';
+import Seller from '../model/Seller';
 export default class SellerAccess {
   private prompt = promptSync();
   private sellerRegister: SellerRegister;
@@ -15,9 +16,10 @@ export default class SellerAccess {
   public sellerMenu(): void {
     let continues: boolean = true;
     while (continues) {
+      console.clear();
       let choice = parseInt(
         this.prompt(
-          "\nVendedor:\n" +
+          "Vendedor:\n" +
             " 1. Cadastrar\n" +
             " 2. Login\n" +
             " 3. Voltar\n> "
@@ -55,12 +57,13 @@ export default class SellerAccess {
 
   private loginSeller(): void {
     const email = this.prompt("Digite seu email: ");
-    const seller = this.control.db.findSellerByEmail(email);
-    if (seller) {
-      const sellerScreen = new SellerScreen(this.control, seller);
+    const user = this.control.db.findUserByEmail(email.toLowerCase());
+    
+    if (user && user instanceof Seller) {
+      const sellerScreen = new SellerScreen(this.control, user);
       sellerScreen.show();
     } else {
-      console.log("Vendedor não encontrado.");
+      console.log("\nVendedor não encontrado. Tente novamente.");
     }
     this.pause();
   }

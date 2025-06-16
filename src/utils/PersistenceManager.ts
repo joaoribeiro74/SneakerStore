@@ -1,11 +1,14 @@
 import * as fs from "fs";
 import * as path from "path";
+import { Serializable } from "../model/Serializable";
 
 export default class PersistenceManager<T> {
     private filePath: string;
+    private classRef: Serializable<T> & { new(...args: any[]): T };
 
-    constructor(filename: string) {
+    constructor(filename: string, classRef: Serializable<T> & { new(...args: any[]): T }) {
         this.filePath = path.resolve(__dirname, "../db", filename);
+        this.classRef = classRef;
         this.createFileIfNotExists();
     }
 
@@ -21,6 +24,7 @@ export default class PersistenceManager<T> {
 
     public loadData(): T[] {
         const raw = fs.readFileSync(this.filePath, "utf-8");
-        return JSON.parse(raw) as T[];
+        const parsed = JSON.parse(raw);
+        return parsed.map((obj: any) => this.classRef.fromJSON(obj));
     }
 }

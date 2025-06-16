@@ -85,4 +85,23 @@ export default class Sale {
     }
     return address;
   }
+
+  static fromJSON(json: any): Sale {
+    const sneaker = Sneaker.fromJSON(json.sneaker);
+    const client = Client.fromJSON(json.client);
+    const address = Address.fromJSON(json.deliveryAddress);
+    const stock = Stock.fromJSON(json.stock);
+    const seller = Seller.fromJSON(json.seller);
+
+    const sale = Object.create(Sale.prototype) as Sale;
+
+    sale.id = json.id;
+    sale.sneaker = sneaker;
+    sale.client = client;
+    sale.deliveryAddress = address;
+    sale.stock = stock;
+    sale.seller = seller;
+
+    return sale;
+  }
 }

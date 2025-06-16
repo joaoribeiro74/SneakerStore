@@ -112,4 +112,25 @@ export default class Sneaker {
     }
     return sneaker;
   }
+
+  public setId(id: number): void {
+    this.id = id;
+  }
+
+  static fromJSON(json: any): Sneaker {
+    const sneaker = new Sneaker(
+      json.brand,
+      json.model,
+      json.price,
+      json.colors,
+      json.gender,
+      json.sizes,
+      json.releaseDate
+    );
+    sneaker.setId(json.id);
+    if (json.discountPercentage) {
+      sneaker.applyDiscount(json.discountPercentage);
+    }
+    return sneaker;
+  }
 }

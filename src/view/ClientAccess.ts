@@ -2,6 +2,7 @@ import promptSync from "prompt-sync";
 import MainController from "../controller/MainController";
 import ClientRegister from "./ClientRegister";
 import ClientScreen from "./ClientScreen";
+import Client from "../model/Client";
 export default class ClientAccess {
   private prompt = promptSync();
   private clientRegister: ClientRegister;
@@ -17,7 +18,7 @@ export default class ClientAccess {
     while (continues) {
       let choice = parseInt(
         this.prompt(
-          "\nCliente:\n" +
+          "Cliente:\n" +
             " 1. Cadastrar\n" +
             " 2. Login\n" +
             " 3. Voltar\n> "
@@ -56,12 +57,13 @@ export default class ClientAccess {
 
   private loginClient(): void {
     const email = this.prompt("Digite seu email: ");
-    const client = this.control.db.findClientByEmail(email);
-    if (client) {
-      const clientScreen = new ClientScreen(this.control, client);
+    const user = this.control.db.findUserByEmail(email.toLowerCase());
+
+    if (user && user instanceof Client) {
+      const clientScreen = new ClientScreen(this.control, user);
       clientScreen.show();
     } else {
-      console.log("Cliente não encontrado.");
+      console.log("\nCliente não encontrado.");
     }
     this.pause();
   }

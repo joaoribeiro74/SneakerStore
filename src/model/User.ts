@@ -2,12 +2,13 @@ import IUser from "./IUser";
 import { UserType } from "./UserType";
 
 export default abstract class User implements IUser {
-  protected id!: number;
+  protected id: number;
   protected name: string = "";
   protected email: string = "";
   protected type: UserType;
 
-  constructor(name: string, email: string, type: UserType) {
+  constructor(id: number, name: string, email: string, type: UserType) {
+    this.id = id;
     this.name = name;
     this.email = email;
     this.type = type;

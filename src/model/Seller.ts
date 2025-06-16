@@ -7,8 +7,8 @@ export default class Seller extends User {
   private sales: Sale[] = [];
   private balance: number = 0;
 
-  constructor(name: string, email: string) {
-    super(name, email, UserType.seller);
+  constructor(id: number, name: string, email: string) {
+    super(id, name, email, UserType.seller);
   }
 
   public addSale(sale: Sale, value: number): void {
@@ -25,8 +25,14 @@ export default class Seller extends User {
   }
 
   public displayInfo(): string {
-    return `Vendedor: ${this.getName()} | Total de Vendas: ${
-      this.sales.length
-    } | Saldo: R$ ${this.balance.toFixed(2)}`;
+    return `ID: ${this.getId()} | Vendedor: ${this.getName()} | Email: ${this.getEmail()}`;
+  }
+
+  static fromJSON(json: any): Seller {
+    const seller = new Seller(json.id, json.name, json.email);
+    seller.id = json.id;
+    seller.balance = json.balance ?? 0;
+    seller.sales = (json.sales ?? []).map((saleJson: any) => Sale.fromJSON(saleJson));
+    return seller;
   }
 }

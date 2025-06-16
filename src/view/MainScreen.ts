@@ -22,7 +22,7 @@ export default class MainScreen {
       console.clear();
       let choice = parseInt(
         this.prompt(
-          "\nEntrar como:\n" +
+          "Entrar como:\n" +
             " 1. Vendedor\n" +
             " 2. Cliente\n" +
             " 3. Sair\n> "

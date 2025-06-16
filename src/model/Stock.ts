@@ -37,4 +37,9 @@ export default class Stock {
   public hasEnoughStock(amount: number): boolean {
     return this.quantity >= amount;
   }
+
+  static fromJSON(json: any): Stock {
+    const sneaker = Sneaker.fromJSON(json.sneaker);
+    return new Stock(sneaker, json.quantity);
+  }
 }

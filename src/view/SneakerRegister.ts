@@ -13,7 +13,7 @@ export default class SneakerRegister {
   }
 
   public addSneaker(): void {
-    console.log("\n--- Cadastro de Sneakers ---");
+    console.log("--- Cadastro de Sneakers ---\n");
 
     let brand = InputUtils.getInput("Marca: ");
     let model = InputUtils.getInput("Modelo: ");

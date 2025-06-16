@@ -4,7 +4,7 @@ import Address from "../model/Address";
 
 describe("Client class", () => {
   it("deve criar um cliente com nome, email e id corretos", () => {
-    const client = new Client("João", "joao@email.com");
+    const client = new Client(2, "João", "joao@email.com");
 
     expect(client.getName()).toBe("João");
     expect(client.getEmail()).toBe("joao@email.com");
@@ -13,7 +13,7 @@ describe("Client class", () => {
   });
 
   it("deve adicionar um endereço corretamente", () => {
-    const client = new Client("Maria", "maria@email.com");
+    const client = new Client(1, "Maria", "maria@email.com");
     const clientAddress = new Address(
       "85012-230",
       "Guarapuava",

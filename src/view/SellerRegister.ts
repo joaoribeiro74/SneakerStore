@@ -12,16 +12,13 @@ export default class SellerRegister {
   }
 
   public addSeller(): void {
-    console.log("\n--- Cadastro de Vendedor ---");
+    console.log("--- Cadastro de Vendedor ---\n");
 
     let sellerName = InputUtils.getInput("Nome: ");
     let sellerEmail = InputUtils.getValidEmailInput("E-mail: ");
 
-    let seller: Seller = this.control.getNewSeller(
-      sellerName,
-      sellerEmail,
-    );
     try {
+      const seller: Seller = this.control.getNewSeller(sellerName, sellerEmail);
       this.control.db.addNewSeller(seller);
       console.log(`\nVendedor ${seller.getName()} cadastrado com sucesso!`);
     } catch (err) {

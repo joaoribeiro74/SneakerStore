@@ -80,4 +80,16 @@ export default class Address {
   public setReference(reference: string): void {
     this.reference = reference;
   }
+
+  static fromJSON(json: any): Address {
+    return new Address(
+      json.cep,
+      json.city,
+      json.state,
+      json.country,
+      json.district,
+      json.address,
+      json.reference
+    );
+  }
 }

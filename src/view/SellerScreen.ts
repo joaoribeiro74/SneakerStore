@@ -25,20 +25,22 @@ export default class SellerScreen {
     let continues: boolean = true;
     while (continues) {
       console.clear();
-      console.log("\n--- Menu de Vendedor ---\n");
+      console.log("--- Menu de Vendedor ---\n");
       let choice = parseInt(
         this.prompt(
-          "\nEscolha:\n" +
+          `Bem-Vindo, ${this.seller.getName()}!\n` +
             " 1. Cadastrar Tênis\n" +
             " 2. Editar Informações do Tênis\n" +
             " 3. Aplicar descontos\n" +
             " 4. Listar produtos\n" +
             " 5. Finalizar pedidos de clientes\n" +
-            " 6. Editar Dados\n" + 
-            " 7. Ver Histórico de Vendas\n" +
-            " 8. Sair\n> "
+            " 6. Ver Dados\n" +
+            " 7. Editar Dados\n" +
+            " 8. Ver Histórico de Vendas\n" +
+            " 9. Sair\n> "
         )
       );
+      console.clear();
 
       switch (choice) {
         case 1:
@@ -59,17 +61,18 @@ export default class SellerScreen {
           break;
         case 5:
           this.finalizeClientOrder();
-          this.pause();
           break;
         case 6:
-          this.editData();
-          this.pause();
+          this.seeData();
           break;
         case 7:
+          this.editData();
+          break;
+        case 8:
           this.control.db.listSalesBySeller(this.seller.getId());
           this.pause();
           break;
-        case 8:
+        case 9:
           continues = false;
           break;
         default:
@@ -118,11 +121,17 @@ export default class SellerScreen {
     this.control.db.removeOrder(selectedOrder.getId());
 
     console.log("\n✅ Pedido finalizado com sucesso!");
+    this.pause();
   }
 
+  private seeData(): void {
+    console.log("--- Seus Dados ---\n");
+    console.log(this.seller.displayInfo());
+    this.pause();
+  }
 
   private editData(): void {
-    console.log("\n--- Editar Dados ---\n");
+    console.log("--- Editar Dados ---\n");
 
       const newName = this.prompt("Novo nome (deixe vazio para manter): ");
       const newEmail = this.prompt("Novo email (deixe vazio para manter): ");
@@ -132,5 +141,6 @@ export default class SellerScreen {
 
       this.control.db.updateSeller(this.seller);
       console.log("\nDados atualizados com sucesso!");
+      this.pause();
     }
 }

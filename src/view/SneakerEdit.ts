@@ -15,10 +15,10 @@ export default class SneakerEdit {
     let continues: boolean = true;
     while (continues) {
       console.clear();
-      console.log("\n--- Editar Tênis ---\n");
+      console.log("--- Editar Tênis ---\n");
       let choice = parseInt(
         this.prompt(
-          "\nO que deseja fazer:\n" +
+          "O que deseja fazer:\n" +
             " 1. Alterar informações do tênis\n" +
             " 2. Aumentar estoque\n" +
             " 3. Excluir tênis\n" +

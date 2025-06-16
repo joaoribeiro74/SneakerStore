@@ -5,6 +5,7 @@ import Sale from "../model/Sale";
 import Seller from "../model/Seller";
 import Sneaker from "../model/Sneaker";
 import Stock from "../model/Stock";
+import { getNextId } from "../utils/IdManager";
 import MainScreen from "../view/MainScreen";
 
 export default class MainController {
@@ -25,7 +26,15 @@ export default class MainController {
     address: string,
     reference: string
   ): Client {
-    const client = new Client(name, email);
+    const existingClient = this.db.findUserByEmail(email.toLowerCase());
+
+    if (existingClient) {
+      throw new Error("\nJá existe um usuário cadastrado com este e-mail. Tente Novamente.");
+    }
+
+    const id = getNextId("Client");
+
+    const client = new Client(id, name, email);
     const clientAddress = new Address(
       cep,
       city,
@@ -43,8 +52,14 @@ export default class MainController {
     name: string,
     email: string,
   ): Seller {
-    const seller = new Seller(name, email);
-    return seller;
+    const existingSeller = this.db.findUserByEmail(email.toLowerCase());
+
+    if (existingSeller) {
+      throw new Error("\nJá existe um usuário cadastrado com este e-mail. Tente Novamente.");
+    }
+
+    const id = getNextId("Seller");
+    return new Seller(id, name, email);
   }
 
   public getNewSneaker(
