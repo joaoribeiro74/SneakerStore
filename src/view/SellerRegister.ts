@@ -21,7 +21,11 @@ export default class SellerRegister {
       sellerName,
       sellerEmail,
     );
-    this.control.db.addNewSeller(seller);
-    console.log(`\nVendedor ${seller.getName()} cadastrado com sucesso!`);
+    try {
+      this.control.db.addNewSeller(seller);
+      console.log(`\nVendedor ${seller.getName()} cadastrado com sucesso!`);
+    } catch (err) {
+      console.log((err as Error).message);
+    }
   }
 }

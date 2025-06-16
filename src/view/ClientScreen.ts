@@ -3,6 +3,8 @@ import MainController from "../controller/MainController";
 import Client from "../model/Client";
 import Address from "../model/Address";
 import InputUtils from "../utils/InputUtils";
+import { getNextId } from "../utils/IdManager";
+import Order from "../model/Order";
 export default class ClientScreen {
   private prompt = promptSync();
   private control: MainController;
@@ -11,13 +13,11 @@ export default class ClientScreen {
   constructor(control: MainController, client: Client) {
     this.control = control;
     this.client = client;
-    this.show();
   }
 
   public show(): void {
     let continues: boolean = true;
     while (continues) {
-      console.clear();
       let choice = parseInt(
         this.prompt(
           `Bem-Vindo, ${this.client.getName()}!\n` +
@@ -140,12 +140,19 @@ export default class ClientScreen {
       `\nPedido será enviado para: ${selectedAddress.getAddress()}, ${selectedAddress.getDistrict()}, ${selectedAddress.getCity()} - ${selectedAddress.getState()}, ${selectedAddress.getCountry()}`
     );
 
+    const orderId = getNextId("Order");
+    const order = new Order(
+      orderId, this.client, [...cart], selectedAddress
+    );
+    this.control.db.addOrder(order);
+
+    cart.length = 0;
+    this.control.db.updateClient(this.client);
+
     console.log(
       "\n✅ Pedido enviado! Aguarde um vendedor processar sua compra."
     );
 
-    cart.length = 0;
-    this.control.db.updateClient(this.client);
     this.pause();
   }
 

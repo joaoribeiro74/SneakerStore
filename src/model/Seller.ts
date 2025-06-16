@@ -9,7 +9,6 @@ export default class Seller extends User {
 
   constructor(name: string, email: string) {
     super(name, email, UserType.seller);
-    this.id = getNextId("Seller");
   }
 
   public addSale(sale: Sale, value: number): void {

@@ -10,21 +10,20 @@ export default class SellerAccess {
   constructor(control: MainController) {
     this.control = control;
     this.sellerRegister = new SellerRegister(control);
-    this.menu();
   }
 
-  public menu(): void {
+  public sellerMenu(): void {
     let continues: boolean = true;
     while (continues) {
-      console.clear();
       let choice = parseInt(
         this.prompt(
-          "\nEntrar como:\n" +
+          "\nVendedor:\n" +
             " 1. Cadastrar\n" +
             " 2. Login\n" +
-            " 3. Sair\n> "
+            " 3. Voltar\n> "
         )
       );
+      console.clear();
 
       switch (choice) {
         case 1:
@@ -55,7 +54,7 @@ export default class SellerAccess {
   }
 
   private loginSeller(): void {
-    const email = this.prompt("\nDigite seu email: ");
+    const email = this.prompt("Digite seu email: ");
     const seller = this.control.db.findSellerByEmail(email);
     if (seller) {
       const sellerScreen = new SellerScreen(this.control, seller);

@@ -10,21 +10,20 @@ export default class ClientAccess {
   constructor(control: MainController) {
     this.control = control;
     this.clientRegister = new ClientRegister(control);
-    this.menu();
   }
 
-  public menu(): void {
+  public clientMenu(): void {
     let continues: boolean = true;
     while (continues) {
-      console.clear();
       let choice = parseInt(
         this.prompt(
-          "\nEntrar como:\n" +
+          "\nCliente:\n" +
             " 1. Cadastrar\n" +
             " 2. Login\n" +
-            " 3. Sair\n> "
+            " 3. Voltar\n> "
         )
       );
+      console.clear();
 
       switch (choice) {
         case 1:
@@ -52,10 +51,11 @@ export default class ClientAccess {
   private registerClient(): void {
     this.clientRegister.addClient();
     this.pause();
+    console.clear();
   }
 
   private loginClient(): void {
-    const email = this.prompt("\nDigite seu email: ");
+    const email = this.prompt("Digite seu email: ");
     const client = this.control.db.findClientByEmail(email);
     if (client) {
       const clientScreen = new ClientScreen(this.control, client);

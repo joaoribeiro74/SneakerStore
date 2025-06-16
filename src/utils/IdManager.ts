@@ -29,3 +29,16 @@ export function getNextId(entityName: string): number {
 
     return idStore[entityName];
 }
+
+export function resetAllIds() {
+  for (const key in idStore) {
+    idStore[key] = 1;
+  }
+  save();
+}
+
+// Ou: resetar apenas um tipo
+export function resetId(entityName: string) {
+  idStore[entityName] = 1;
+  save();
+}

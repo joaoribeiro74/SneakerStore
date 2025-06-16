@@ -3,6 +3,7 @@ import Sale from "../model/Sale";
 import Seller from "../model/Seller";
 import Sneaker from "../model/Sneaker";
 import Stock from "../model/Stock";
+import Order from "../model/Order";
 import PersistenceManager from "../utils/PersistenceManager";
 
 export default class Database {
@@ -11,12 +12,14 @@ export default class Database {
   private sneakerDb: Sneaker[] = [];
   private saleDb: Sale[] = [];
   private stockDb: Stock[] = [];
+  private orderDb: Order[] = [];
 
   private clientStorage = new PersistenceManager<Client>("clients.json");
   private sellerStorage = new PersistenceManager<Seller>("sellers.json");
   private sneakerStorage = new PersistenceManager<Sneaker>("sneakers.json");
   private saleStorage = new PersistenceManager<Sale>("sales.json");
   private stockStorage = new PersistenceManager<Stock>("stock.json");
+  private orderStorage = new PersistenceManager<Order>("orders.json");
 
   constructor() {
     this.clientDb = this.clientStorage.loadData();
@@ -24,15 +27,24 @@ export default class Database {
     this.sneakerDb = this.sneakerStorage.loadData();
     this.saleDb = this.saleStorage.loadData();
     this.stockDb = this.stockStorage.loadData();
+    this.orderDb = this.orderStorage.loadData();
   }
 
   public addNewClient(client: Client): void {
+    const existingClient = this.findClientByEmail(client.getEmail());
+
+    if (existingClient) {
+      console.log("Já existe um cliente cadastrado com este e-mail.");
+    }
+
     this.clientDb.push(client);
     this.clientStorage.saveData(this.clientDb);
   }
 
   public updateClient(updatedClient: Client): void {
-    const index = this.clientDb.findIndex(client => client.getId() === updatedClient.getId());
+    const index = this.clientDb.findIndex(
+      (client) => client.getId() === updatedClient.getId()
+    );
 
     if (index === -1) {
       throw new Error("Client not found");
@@ -47,13 +59,21 @@ export default class Database {
   }
 
   public addNewSeller(seller: Seller): void {
+    const existingSeller = this.findSellerByEmail(seller.getEmail());
+
+    if (existingSeller) {
+      throw new Error("\nJá existe um vendedor com este e-mail. Tente Novamente.");
+    }
+
     this.sellerDb.push(seller);
     this.sellerStorage.saveData(this.sellerDb);
   }
 
   public updateSeller(updatedSeller: Seller): void {
-    const index = this.sellerDb.findIndex(seller => seller.getId() === updatedSeller.getId());
-    if (index === -1) throw new Error("Seller not found");
+    const index = this.sellerDb.findIndex(
+      (seller) => seller.getId() === updatedSeller.getId()
+    );
+    if (index === -1) throw new Error("Vendedor não encontrado");
     this.sellerDb[index] = updatedSeller;
     this.sellerStorage.saveData(this.sellerDb);
   }
@@ -71,6 +91,11 @@ export default class Database {
     return this.sneakerDb.find((sneaker) => sneaker.getId() === id) || null;
   }
 
+  public removeSneakerById(id: number): void {
+    this.sneakerDb = this.sneakerDb.filter((sneaker) => sneaker.getId() !== id);
+    this.sneakerStorage.saveData(this.sneakerDb);
+  }
+
   public addNewSale(sale: Sale) {
     this.saleDb.push(sale);
     this.saleStorage.saveData(this.saleDb);
@@ -86,6 +111,34 @@ export default class Database {
       (stock) => stock.getSneaker().getId() === id
     );
     return stock || null;
+  }
+
+  public removeStockBySneakerId(sneakerId: number): void {
+    this.stockDb = this.stockDb.filter(
+      (stock) => stock.getSneaker().getId() !== sneakerId
+    );
+    this.stockStorage.saveData(this.stockDb);
+  }
+
+  public getAllOrders(): Order[] {
+    return this.orderDb;
+  }
+
+  public addOrder(order: Order): void {
+    this.orderDb.push(order);
+    this.orderStorage.saveData(this.orderDb);
+  }
+
+  public removeOrder(orderId: number): boolean {
+    const index = this.orderDb.findIndex(order => order.getId() === orderId);
+    
+    if (index === -1) {
+      return false; // Pedido não encontrado
+    }
+
+    this.orderDb.splice(index, 1);
+    this.orderStorage.saveData(this.orderDb);
+    return true; // Pedido removido com sucesso
   }
 
   public findClientByEmail(email: string): Client | undefined {
@@ -160,6 +213,29 @@ export default class Database {
           .getName()} | Sneaker Vendido: ${sale.getSneaker().getBrand()} ${sale
           .getSneaker()
           .getModel()} | Enviar para: ${sale.getDeliveryAddressFormatted()}`
+      );
+    }
+  }
+
+  public listSalesBySeller(sellerId: number): void {
+    console.log("\n--- Vendas Realizadas por Este Vendedor ---\n");
+
+    const sales = this.saleDb.filter(
+      (sale) => sale.getSeller().getId() === sellerId
+    );
+
+    if (sales.length === 0) {
+      console.log("Nenhuma venda encontrada para este vendedor.");
+      return;
+    }
+
+    for (const sale of sales) {
+      console.log(
+        `ID da Venda: ${sale.getId()} | Comprador: ${sale
+          .getClient()
+          .getName()} | Tênis: ${sale.getSneaker().getBrand()} ${sale
+          .getSneaker()
+          .getModel()} | Envio: ${sale.getDeliveryAddressFormatted()}`
       );
     }
   }
