@@ -18,15 +18,12 @@ export default class ApplyDiscountScreen {
       this.prompt("Digite a porcentagem de desconto: ")
     );
 
-    let sneaker = this.control.db.getSneakerById(sneakerId);
+    const success = this.control.applyDiscountToSneaker(sneakerId, discountPercentage);
 
-    if (sneaker instanceof Sneaker) {
-      sneaker.applyDiscount(discountPercentage);
-      this.control.db.updateSneaker(sneaker);
-
-      console.log("\nDesconto aplicado com sucesso!");
+    if (success) {
+      console.log("\n✅ Desconto aplicado com sucesso!");
     } else {
-      console.log("\nSneaker não encontrado.");
+      console.log("\n❌ Sneaker não encontrado.");
     }
   }
 }

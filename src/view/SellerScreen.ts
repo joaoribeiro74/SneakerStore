@@ -56,7 +56,7 @@ export default class SellerScreen {
           this.pause();
           break;
         case 4:
-          this.control.db.listAllSneakers();
+          this.control.getAllSneakers();
           this.pause();
           break;
         case 5:
@@ -90,7 +90,7 @@ export default class SellerScreen {
   }
 
   private finalizeClientOrder(): void {
-    const orders = this.control.db.getAllOrders();
+    const orders = this.control.getPendingOrders();
 
     if (orders.length === 0) {
       console.log("\n🚫 Nenhum pedido pendente.");
@@ -100,46 +100,55 @@ export default class SellerScreen {
     console.log("\n--- Pedidos Pendentes ---\n");
     orders.forEach((order: Order, index: number) => {
       console.log(
-        `${index + 1}. Cliente: ${order.getClient().getName()} | Itens: ${order.getItems().length} | Endereço de Envio: ${order.getDeliveryAddress().getAddress()}, ${order.getDeliveryAddress().getDistrict()}, ${order.getDeliveryAddress().getCity()} - ${order.getDeliveryAddress().getState()}, ${order.getDeliveryAddress().getCountry()}`
+        `${index + 1}. Cliente: ${order.getClient().getName()} | Itens: ${
+          order.getItems().length
+        } | Endereço de Envio: ${order
+          .getDeliveryAddress()
+          .getAddress()}, ${order.getDeliveryAddress().getDistrict()}, ${order
+          .getDeliveryAddress()
+          .getCity()} - ${order.getDeliveryAddress().getState()}, ${order
+          .getDeliveryAddress()
+          .getCountry()}`
       );
     });
 
-    const choice = parseInt(this.prompt("\nDigite o número do pedido que deseja finalizar: "));
-    if (isNaN(choice) || choice < 1 || choice > orders.length) {
+    const choice = parseInt(
+      this.prompt("\nDigite o número do pedido que deseja finalizar: ")
+    );
+    if (isNaN(choice)) {
       console.log("\n❌ Opção inválida.");
       return;
     }
 
-    const selectedOrder = orders[choice - 1];
-    const client = selectedOrder.getClient();
-    const cart = selectedOrder.getItems();
-
-    // Cria uma venda para cada item do pedido
-    const sales = this.control.getNewSales(client, this.seller, cart);
-    sales.forEach(sale => this.control.db.addNewSale(sale));
-
-    this.control.db.removeOrder(selectedOrder.getId());
-
-    console.log("\n✅ Pedido finalizado com sucesso!");
+    const result = this.control.finalizeOrderByIndex(this.seller, choice - 1);
+    console.log(`\n${result.message}`);
   }
 
   private seeData(): void {
     console.log("--- Seus Dados ---\n");
-    console.log(this.seller.displayInfo());
+    const info = this.control.getSellerInfo(this.seller.getId());
+    console.log(info);
     this.pause();
   }
 
   private editData(): void {
     console.log("--- Editar Dados ---\n");
 
-      const newName = this.prompt("Novo nome (deixe vazio para manter): ");
-      const newEmail = this.prompt("Novo email (deixe vazio para manter): ");
+    const newName = this.prompt("Novo nome (deixe vazio para manter): ");
+    const newEmail = this.prompt("Novo email (deixe vazio para manter): ");
 
-      if (newName) this.seller.setName(newName);
-      if (newEmail) this.seller.setEmail(newEmail);
+    const success = this.control.updateSellerData(
+      this.seller.getId(),
+      newName || undefined,
+      newEmail || undefined
+    );
 
-      this.control.db.updateSeller(this.seller);
+    if (success) {
       console.log("\nDados atualizados com sucesso!");
-      this.pause();
+    } else {
+      console.log("\nErro ao atualizar dados.");
     }
+
+    this.pause();
+  }
 }

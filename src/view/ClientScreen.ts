@@ -75,7 +75,6 @@ export default class ClientScreen {
           break;
       }
     }
-    console.log("\nSAIU");
   }
 
   private pause(): void {
@@ -83,69 +82,65 @@ export default class ClientScreen {
   }
 
   private addToCart(): void {
-  const id = Number(this.prompt("Digite o ID do tênis que deseja adicionar ao carrinho: "));
-  if (isNaN(id)) {
-    console.log("\n❌ Entrada inválida. Digite um número.");
-    this.pause();
-    return;
-  }
+    const id = Number(
+      this.prompt("Digite o ID do tênis que deseja adicionar ao carrinho: ")
+    );
+    if (isNaN(id)) {
+      console.log("\n❌ Entrada inválida. Digite um número.");
+      return;
+    }
 
-  const sneaker = this.control.db.findSneakerById(id);
-  if (!sneaker) {
-    console.log("\n❌ Tênis não encontrado com o ID informado.");
-    this.pause();
-    return;
-  }
+    const sneaker = this.control.db.findSneakerById(id);
+    if (!sneaker) {
+      console.log("\n❌ Tênis não encontrado.");
+      return;
+    }
 
-  const availableSizes = sneaker.getSizes(); // supondo que esse método existe e retorna number[]
-  try {
+    const availableSizes = sneaker.getSizes();
     if (!availableSizes || availableSizes.length === 0) {
-      throw new OutOfStockException("Nenhum tamanho disponível para este modelo.");
+      console.log("\n❌ Nenhum tamanho disponível para este modelo.");
+      return;
     }
 
     console.log("\n📏 Tamanhos disponíveis: " + availableSizes.join(", "));
     const size = Number(this.prompt("Digite o tamanho desejado: "));
-    if (!availableSizes.includes(size)) {
-      throw new OutOfStockException();
-    }
 
-    this.client.getCart().push({ sneaker, size });
-    console.log(`\n✅ Tênis adicionado ao carrinho no tamanho ${size}!`);
-  } catch (error) {
+    try {
+      this.control.addToCart(this.client, id, size);
+      console.log(`\n✅ Tênis adicionado ao carrinho no tamanho ${size}!`);
+    } catch (error) {
       if (error instanceof Error) {
-      console.log("\n❌ " + error.message);
-    } else {
-      console.log("\n❌ Erro desconhecido");
-    }
+        console.log("\n❌ " + error.message);
+      } else {
+        console.log("\n❌ Erro desconhecido.");
+      }
     }
   }
 
   private viewCart(): void {
-    const cart = this.client.getCart();
+    const cartItems = this.control.getCartItems(this.client);
     console.log("--- Carrinho ---\n");
-    if (cart.length === 0) {
+    if (cartItems.length === 0) {
       console.log("Carrinho vazio.");
     } else {
-      cart.forEach((item, i) => {
-        console.log(`${i + 1}. ${item.sneaker.getInfo()} | Tamanho Escolhido: ${item.size}`);
+      cartItems.forEach((item, i) => {
+        console.log(
+          `${i + 1}. ${item.sneaker.getInfo()} | Tamanho: ${item.size}`
+        );
       });
     }
   }
 
   private finishOrder(): void {
-    const cart = this.client.getCart();
+    const cart = this.control.getCartItems(this.client);
     if (cart.length === 0) {
       console.log("\n❌ Seu carrinho está vazio!");
-      this.pause();
       return;
     }
 
-    const addresses = this.client.getAddresses();
+    const addresses = this.control.getClientAddresses(this.client);
     if (addresses.length === 0) {
-      console.log(
-        "\n❌ Nenhum endereço cadastrado. Por favor, adicione um antes de finalizar o pedido."
-      );
-      this.pause();
+      console.log("\n❌ Nenhum endereço cadastrado. Por favor, adicione um.");
       return;
     }
 
@@ -158,46 +153,19 @@ export default class ClientScreen {
       );
     });
 
-    const choice = Number(
-      this.prompt("\nDigite o número do endereço desejado: ")
-    );
+    const choice =
+      Number(this.prompt("\nDigite o número do endereço desejado: ")) - 1;
+
     try {
-      if (isNaN(choice) || choice < 1 || choice > addresses.length) {
-        throw new InvalidAddressException();
-      }
+      this.control.finishOrder(this.client, choice);
+      console.log("\n✅ Pedido finalizado com sucesso! Aguarde o vendedor.");
     } catch (error) {
-        if (error instanceof Error) {
+      if (error instanceof Error) {
         console.log("\n❌ " + error.message);
       } else {
-        console.log("\n❌ Erro desconhecido");
+        console.log("\n❌ Erro desconhecido.");
       }
-    this.pause();
-    return;
     }
-    
-    const selectedAddress = addresses[choice - 1];
-
-    console.clear();
-    console.log("\n--- Itens do seu pedido ---\n");
-    cart.forEach((item, i) => {
-      console.log(`${i + 1}. ${item.sneaker.getInfo()} | Tamanho: ${item.size}`);
-    });
-
-    console.log(
-      `\nPedido será enviado para: ${selectedAddress.getAddress()}, ${selectedAddress.getDistrict()}, ${selectedAddress.getCity()} - ${selectedAddress.getState()}, ${selectedAddress.getCountry()}`
-    );
-
-    const orderId = getNextId("Order");
-    const sneakersOnly = cart.map((item) => item.sneaker);
-    const order = new Order(orderId, this.client, sneakersOnly, selectedAddress);
-    this.control.db.addOrder(order);
-
-    cart.length = 0;
-    this.control.db.updateClient(this.client);
-
-    console.log(
-      "\n✅ Pedido enviado! Aguarde um vendedor processar sua compra."
-    );
   }
 
   private addAddress(): void {
@@ -205,11 +173,11 @@ export default class ClientScreen {
 
     const cep = InputUtils.getValidCepInput("CEP: ");
     const city = InputUtils.getInput("Cidade: ");
-    const state = InputUtils.getValidStateInput("Estado: ");
+    const state = InputUtils.getInput("Estado (sigla ex: SP): ");
     const country = InputUtils.getInput("País: ");
     const district = InputUtils.getInput("Bairro: ");
-    const address = InputUtils.getInput("Endereço: ");
-    const reference = InputUtils.getOptionalInput("Referência: ");
+    const addressLine = InputUtils.getInput("Endereço (Rua, Nº): ");
+    const reference = InputUtils.getInput("Referência (opcional): ");
 
     const newAddress = new Address(
       cep,
@@ -217,20 +185,30 @@ export default class ClientScreen {
       state,
       country,
       district,
-      address,
-      reference!
+      addressLine,
+      reference
     );
-    this.client.getAddresses().push(newAddress);
-    this.control.db.updateClient(this.client);
-
+    this.control.addAddress(this.client, newAddress);
     console.log("\n✅ Endereço adicionado com sucesso!");
   }
 
-  private seeData(): void {
+   private seeData(): void {
     console.log("--- Seus Dados ---\n");
-    console.log(this.client.displayInfo());
-  }
+    console.log(`Nome: ${this.client.getName()}`);
+    console.log(`Email: ${this.client.getEmail()}`);
 
+    const addresses = this.control.getClientAddresses(this.client);
+    if (addresses.length > 0) {
+      console.log("\nEndereços:");
+      addresses.forEach((a, i) => {
+        console.log(
+          `${i + 1}. ${a.getAddress()}, ${a.getDistrict()}, ${a.getCity()} - ${a.getState()}, ${a.getCountry()}`
+        );
+      });
+    } else {
+      console.log("Nenhum endereço cadastrado.");
+    }
+  }
   private editData(): void {
     console.log("--- Editar Dados ---\n");
 
@@ -252,12 +230,14 @@ export default class ClientScreen {
       console.log(
         `${
           index + 1
-        }. ${address.getAddress()}, ${address.getDistrict()}, ${address.getCity()} - ${address.getState()}, ${address.getCountry()}`
+        }. ${address.getAddress()}, ${address.getDistrict()}, ${address.getCity()} - ${address.getState()}, ${address.getCountry()} \n`
       );
     });
 
     const option = Number(
-      this.prompt("\nDigite o número do endereço que deseja editar (ou 0 para não editar): ")
+      this.prompt(
+        "Digite o número do endereço que deseja editar (ou 0 para não editar): "
+      )
     );
     if (isNaN(option) || option < 0 || option > addresses.length) {
       console.log("\n❌ Opção inválida.");
@@ -283,21 +263,23 @@ export default class ClientScreen {
     const reference = this.prompt(`Referência (${selected.getReference()}): `);
 
     if (cepInput) {
-        const cepRegex = /^\d{5}-?\d{3}$/;
-        if (cepRegex.test(cepInput)) {
+      const cepRegex = /^\d{5}-?\d{3}$/;
+      if (cepRegex.test(cepInput)) {
         selected.setCep(cepInput);
-        } else {
+      } else {
         console.log("CEP inválido. Use o formato 00000-000 ou 00000000.");
-        }
+      }
     }
     if (city) selected.setCity(city);
     if (stateInput) {
-        const stateRegex = /^[A-Za-z]{2}$/;
-        if (stateRegex.test(stateInput)) {
+      const stateRegex = /^[A-Za-z]{2}$/;
+      if (stateRegex.test(stateInput)) {
         selected.setState(stateInput.toUpperCase());
-        } else {
-        console.log("Estado inválido. Digite a sigla com duas letras (ex: SP, RJ, PR).");
-        }
+      } else {
+        console.log(
+          "Estado inválido. Digite a sigla com duas letras (ex: SP, RJ, PR)."
+        );
+      }
     }
     if (country) selected.setCountry(country);
     if (district) selected.setDistrict(district);
@@ -306,6 +288,5 @@ export default class ClientScreen {
 
     this.control.db.updateClient(this.client);
     console.log("\n✅ Dados do cliente atualizados com sucesso!");
-    this.pause();
   }
 }

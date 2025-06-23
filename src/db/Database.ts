@@ -72,25 +72,31 @@ export default class Database {
     this.sellerStorage.saveData(this.sellerDb);
   }
 
+  public findSellerById(id: number): Seller | undefined {
+    return this.sellerDb.find(seller => seller.getId() === id);
+  }
+
   public addNewSneaker(sneaker: Sneaker): void {
     this.sneakerDb.push(sneaker);
     this.sneakerStorage.saveData(this.sneakerDb);
   }
 
-  public updateSneaker(updatedSneaker: Sneaker): void {
-    const index = this.sneakerDb.findIndex(
-      (sneaker) => sneaker.getId() === updatedSneaker.getId()
-    );
-    if (index === -1) throw new Error("Sneaker não encontrado");
-    this.sneakerDb[index] = updatedSneaker;
-    this.sneakerStorage.saveData(this.sneakerDb);
-  }
+  public updateSneaker(updatedSneaker: Sneaker): boolean {
+  const index = this.sneakerDb.findIndex(
+    (sneaker) => sneaker.getId() === updatedSneaker.getId()
+  );
+  if (index === -1) return false; 
+
+  this.sneakerDb[index] = updatedSneaker;
+  this.sneakerStorage.saveData(this.sneakerDb);
+  return true; 
+}
 
   public getSneakerById(id: number): Sneaker | null {
     return this.sneakerDb.find((sneaker) => sneaker.getId() === id) || null;
   }
 
-  getMaxSneakerId(): number {
+  public getMaxSneakerId(): number {
     if (this.sneakerDb.length === 0) return 0;
     return this.sneakerDb.reduce(
       (max, snk) => (snk.getId() > max ? snk.getId() : max),

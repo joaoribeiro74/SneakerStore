@@ -34,22 +34,20 @@ export default class SneakerRegister {
     );
     let quantity = parseInt(InputUtils.getInput("Estoque: "));
 
-    let sneaker: Sneaker = this.control.getNewSneaker(
-      brand,
-      model,
-      price,
-      colors,
-      gender,
-      sizes,
-      releaseDate
-    );
-    let stock: Stock = this.control.getNewStock(sneaker, quantity);
-
-    this.control.db.addNewSneaker(sneaker);
-    this.control.db.addNewStock(stock);
-
-    console.log(
-      `\nSneaker ${sneaker.getBrand()} ${sneaker.getModel()} cadastrado com sucesso!`
-    );
+    try {
+      this.control.registerNewSneaker({
+        brand,
+        model,
+        price,
+        colors,
+        gender,
+        sizes,
+        releaseDate,
+        quantity,
+      });
+      console.log(`\nSneaker ${brand} ${model} cadastrado com sucesso!`);
+    } catch (error) {
+      console.log(`Erro ao cadastrar sneaker: ${(error as Error).message}`);
+    }
   }
 }
